@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  # En esta parte se definen los servicios de base de datos y mensajería
+  mongodb:
+    image: mongo:latest
+    container_name: dresstyle-mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - dresstyle-network
+    volumes:
+      - mongo-data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: dresstyle-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - dresstyle-network
+
+  # En esta parte se definen los servicios de soporte
+  discovery-server:
+    build: ./services/discoveryserver
+    container_name: dresstyle-discovery
+    ports:
+      - "8761:8761"
+    networks:
+      - dresstyle-network
+
+  api-gateway:
+    build: ./services/apigateway
+    container_name: dresstyle-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:
+      - discovery-server
+    networks:
+      - dresstyle-network
+
+  # En esta parte se definen los microservicios de la aplicación
+  auth-service:
+    build: ./services/authservice
+    container_name: dresstyle-auth
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/dresstyle_auth
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:   #No tiene sentido levantar este servicio sin la base de datos y el servidor de descubrimiento
+      - mongodb
+      - discovery-server
+    networks:
+      - dresstyle-network
+
+  catalog-service:
+    build: ./services/catalogservice
+    container_name: dresstyle-catalog
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/dresstyle_catalog
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:   
+      - mongodb
+      - rabbitmq
+      - discovery-server
+    networks:
+      - dresstyle-network
+
+  order-service:
+    build: ./services/orderservice
+    container_name: dresstyle-order
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/dresstyle_orders
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:
+      - mongodb
+      - rabbitmq
+      - discovery-server
+    networks:
+      - dresstyle-network
+
+  subscription-service:
+    build: ./services/subscriptionservice
+    container_name: dresstyle-subscription
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/dresstyle_subs
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:
+      - mongodb
+      - discovery-server
+    networks:
+      - dresstyle-network
+
+  notification-service:
+    build: ./services/notificationservice
+    container_name: dresstyle-notification
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:
+      - rabbitmq
+      - discovery-server
+    networks:
+      - dresstyle-network
+
+  # Aqui se define el servicio del frontend
+  web-frontend:
+    build: ./vue-proyect
+    container_name: dresstyle-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - dresstyle-network
+
+networks:
+  dresstyle-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
