@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: auth-service
+  data:
+    mongodb:
+      # Usamos 'mongodb' porque es el nombre del servicio en el docker-compose
+      uri: mongodb://mongodb:27017/dresstyle_auth
+  
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka/
+
+server:
+  port: 8081 # Puerto específico para este servicio
+
+jwt:
+  # Esta clave debe ser una cadena larga en Base64
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000 # 24 horas 

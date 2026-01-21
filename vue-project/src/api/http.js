@@ -5,23 +5,14 @@ import axios from 'axios'
 // import api from '@/api/http'
 // api.get('/users')
 
-const baseURL = import.meta.env.VITE_API_BASE || '/api'
+const baseURL = import.meta.env.VITE_API_BASE || 'http://localhost:8080/api/'
 
-const api = axios.create({
-  baseURL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 10000,
-})
-
-// Optional: add a response interceptor to unwrap data or handle auth
-api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    // You can extend this to handle 401 (redirect to login), show toast, etc.
-    return Promise.reject(err)
+http.interceptors.request.use(config => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-)
+  return config;
+});
 
-export default api
+export default http;

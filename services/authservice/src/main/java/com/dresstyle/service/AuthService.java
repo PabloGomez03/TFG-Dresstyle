@@ -1,9 +1,11 @@
 package com.dresstyle.service;
 
 
+import com.dresstyle.dto.AuthResponse;
+import com.dresstyle.dto.LoginRequest;
 import com.dresstyle.dto.RegisterRequest;
-import com.dresstyle.model.User;
 import com.dresstyle.repository.UserRepository;
+import com.dresstyle.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,29 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService; // Inyectar el servicio de tokens
+
+    public AuthResponse login(LoginRequest request) {
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
+
+        // Verificar contraseña
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new RuntimeException("Credenciales inválidas");
+        }
+
+        // Generar el token JWT
+        String token = jwtService.generateToken(user);
+
+        // Devolver la respuesta oficial
+        return AuthResponse.builder()
+                .token(token)
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .roles(user.getRoles())
+                .build();
+    }
 
     public void registrar(RegisterRequest request) {
         //Validar si el email ya existe
@@ -35,5 +60,6 @@ public class AuthService {
 
         // 3. Persistir en MongoDB
         userRepository.save(nuevoUsuario);
+
     }
 }

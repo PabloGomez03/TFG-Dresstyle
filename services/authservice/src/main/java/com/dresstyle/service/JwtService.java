@@ -27,7 +27,7 @@ public class JwtService {
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", user.getRoles());
-        claims.put("name", user.getName()); // Asegúrate que 'nombre' existe en User.java
+        claims.put("name", user.getName());
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -40,6 +40,7 @@ public class JwtService {
 
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
+        return Keys.hmacShaKeyFor(keyBytes); //Este método es el que transforma tu secretKey
+                                             // en una clave criptográfica real.
     }
 }
