@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   # En esta parte se definen los servicios de base de datos y mensajería
