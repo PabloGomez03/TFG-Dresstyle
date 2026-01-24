@@ -29,8 +29,14 @@ defineProps({
       </router-link>
     </div>
 
+
+      <input type="text" placeholder="Busca algun producto" class="search"/>
+
     <nav class="nav">
+
+
       <router-link to="/">Inicio</router-link>
+
 
       <template v-if="authStore.isAuthenticated">
         <router-link to="/perfil">Mi Perfil</router-link>
@@ -69,6 +75,7 @@ defineProps({
   text-decoration: none;
 }
 .nav a:hover { color: rgb(63, 63, 63); }
+
 .btn-logout {
   background: none;
   border: 1px solid #ff4d4d;
@@ -90,6 +97,15 @@ defineProps({
   border-radius: 4px;
 }
 
+.search {
+  flex: 2;
+  max-width: 600px;
+  height: 40px;
+  padding: 0 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
 
+}
 
 </style>
