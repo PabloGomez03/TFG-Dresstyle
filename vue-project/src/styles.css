@@ -1,0 +1,16 @@
+@font-face {
+  font-family: 'TFG-Dresstyle-Font';
+  src:
+       url('@/assets/TFG.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+body {
+  font-family: 'NombreDeTuFuente', sans-serif;
+  background-color: rgb(118, 148, 141);
+}
+footer, header {
+  font-family: 'TFG-Dresstyle-Font', sans-serif;
+}

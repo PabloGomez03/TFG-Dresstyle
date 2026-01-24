@@ -37,6 +37,7 @@ const logout = () => {
 
 
 <style scoped>
+
 .header {
   display: flex;
   justify-content: space-between;

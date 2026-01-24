@@ -12,4 +12,5 @@ import FooterItem from '@/components/FooterItem.vue';
 <FooterItem></FooterItem>
 
 </template>
+
 <style scoped></style>
