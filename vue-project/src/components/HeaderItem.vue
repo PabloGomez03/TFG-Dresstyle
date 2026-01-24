@@ -10,17 +10,27 @@ const logout = () => {
   router.push('/login');
 };
 
+defineProps({
+  logoHeight: {
+    type: String,
+    default: '60px'
+  }
+})
+
 </script>
 
 <template>
   <header class="header">
-    <div class="logo">
-      <router-link to="/">DresStyle</router-link>
+    <div class="logo" >
+      <router-link to="/">
+
+        <img src="@/img/logo.png" :style="{height: logoHeight}" class="logo-img" />
+
+      </router-link>
     </div>
 
     <nav class="nav">
       <router-link to="/">Inicio</router-link>
-      <router-link to="/catalogo">Catálogo</router-link>
 
       <template v-if="authStore.isAuthenticated">
         <router-link to="/perfil">Mi Perfil</router-link>
@@ -43,8 +53,9 @@ const logout = () => {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #1a1a1a;
-  color: white;
+  background-color: #ffffff;
+  color: rgb(255, 255, 255);
+  border-bottom: 3px solid #b9b9b9;
 }
 .logo a {
   font-size: 1.5rem;
@@ -54,10 +65,10 @@ const logout = () => {
 }
 .nav a {
   margin-left: 1.5rem;
-  color: #ccc;
+  color: #000000;
   text-decoration: none;
 }
-.nav a:hover { color: white; }
+.nav a:hover { color: rgb(63, 63, 63); }
 .btn-logout {
   background: none;
   border: 1px solid #ff4d4d;
@@ -66,10 +77,19 @@ const logout = () => {
   padding: 0.3rem 0.8rem;
   cursor: pointer;
 }
+
+.btn-logout button:hover {
+
+  color: rgb(73, 73, 73);
+
+}
 .btn-register {
   background-color: #3498db;
-  color: white !important;
+  color: rgb(0, 0, 0) !important;
   padding: 0.5rem 1rem;
   border-radius: 4px;
 }
+
+
+
 </style>

@@ -30,6 +30,8 @@ import FooterItem from '@/components/FooterItem.vue'
   /* Empuja el componente al final del contenedor */
   margin-top: auto;
 }
+
+
 .content {
   flex: 1;
 }

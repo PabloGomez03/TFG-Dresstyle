@@ -1,4 +1,5 @@
 <script setup></script>
+
 <template>
 <footer class="footer">
     <div class="footer-content">
@@ -20,12 +21,13 @@
   </footer>
 
 </template>
+
 <style scoped>
+
 .footer {
   background-color: #f0eded;
-  padding: 2rem 0 1rem 0;
   margin-top: auto;
-  border-top: 1px solid #ddd;
+  border-top: 3px solid #b9b9b9;
 }
 .footer-content {
   display: flex;
@@ -41,7 +43,6 @@
 .footer-section li { margin-bottom: 0.5rem; }
 .footer-bottom {
   text-align: center;
-  margin-top: 2rem;
   font-size: 0.8rem;
   color: #777;
 }
