@@ -13,7 +13,11 @@ const logout = () => {
 defineProps({
   logoHeight: {
     type: String,
-    default: '60px'
+    default: '60px' //Propiedades para ajustar el tamaño en la imagen de manera flexible
+  },
+  cartHeight: {
+    type: String,
+    default: '40px'
   }
 })
 
@@ -33,11 +37,6 @@ defineProps({
       <input type="text" placeholder="Busca algun producto" class="search"/>
 
     <nav class="nav">
-
-
-      <router-link to="/">Inicio</router-link>
-
-
       <template v-if="authStore.isAuthenticated">
         <router-link to="/perfil">Mi Perfil</router-link>
         <button @click="logout" class="btn-logout">Cerrar Sesión</button>
@@ -45,8 +44,13 @@ defineProps({
 
       <template v-else>
         <router-link to="/login">Iniciar Sesión</router-link>
-        <router-link to="/registro" class="btn-register">Registrarse</router-link>
+        <router-link to="/register" class="btn-register">Registrarse</router-link>
       </template>
+
+      <router-link to="/cart">
+         <img src="@/img/cart.png" :style="{height: cartHeight}" class="cart-img" />
+
+      </router-link>
     </nav>
   </header>
 </template>
@@ -68,6 +72,12 @@ defineProps({
   font-weight: bold;
   color: #fff;
   text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 .nav a {
   margin-left: 1.5rem;
@@ -92,9 +102,13 @@ defineProps({
 }
 .btn-register {
   background-color: #3498db;
-  color: rgb(0, 0, 0) !important;
+  color: #000000 !important;
   padding: 0.5rem 1rem;
   border-radius: 4px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .search {

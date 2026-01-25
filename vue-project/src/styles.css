@@ -9,12 +9,12 @@
 
 html,body {
   font-family: 'TFG-Dresstyle-Font', sans-serif;
-  background-color: rgb(118, 148, 141);
+  background-color: rgb(152, 153, 121);
   margin: 0;
   padding: 0;
   width: 100%;
   overflow-x: hidden;
-  
+
 }
 footer, header {
   font-family: 'TFG-Dresstyle-Font', sans-serif;
