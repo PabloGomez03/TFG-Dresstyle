@@ -1,6 +1,4 @@
-
 services:
-  # En esta parte se definen los servicios de base de datos y mensajería
   mongodb:
     image: mongo:latest
     container_name: dresstyle-mongodb
@@ -19,8 +17,12 @@ services:
       - "15672:15672"
     networks:
       - dresstyle-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # En esta parte se definen los servicios de soporte
   discovery-server:
     build: ./services/discoveryserver
     container_name: dresstyle-discovery
@@ -37,22 +39,24 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
     depends_on:
-      - discovery-server
+      discovery-server:
+        condition: service_started
     networks:
       - dresstyle-network
 
-  # En esta parte se definen los microservicios de la aplicación
   auth-service:
     build: ./services/authservice
     container_name: dresstyle-auth
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/dresstyle_auth
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
-    depends_on:   #No tiene sentido levantar este servicio sin la base de datos y el servidor de descubrimiento
-      - mongodb
-      - discovery-server
-      - rabbitmq:
-        condition: service_healthy #Comprobar que RabbitMQ está listo antes de iniciar el servicio
+    depends_on:
+      mongodb:
+        condition: service_started
+      discovery-server:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     networks:
       - dresstyle-network
 
@@ -63,11 +67,13 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/dresstyle_catalog
       - SPRING_RABBITMQ_HOST=rabbitmq
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
-    depends_on:   
-      - mongodb
-      - rabbitmq:
+    depends_on:
+      mongodb:
+        condition: service_started
+      rabbitmq:
         condition: service_healthy
-      - discovery-server
+      discovery-server:
+        condition: service_started
     networks:
       - dresstyle-network
 
@@ -79,10 +85,12 @@ services:
       - SPRING_RABBITMQ_HOST=rabbitmq
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
     depends_on:
-      - mongodb
-      - rabbitmq:
+      mongodb:
+        condition: service_started
+      rabbitmq:
         condition: service_healthy
-      - discovery-server
+      discovery-server:
+        condition: service_started
     networks:
       - dresstyle-network
 
@@ -93,10 +101,12 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/dresstyle_subs
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
     depends_on:
-      - mongodb
-      - rabbitmq:
+      mongodb:
+        condition: service_started
+      rabbitmq:
         condition: service_healthy
-      - discovery-server
+      discovery-server:
+        condition: service_started
     networks:
       - dresstyle-network
 
@@ -107,20 +117,21 @@ services:
       - SPRING_RABBITMQ_HOST=rabbitmq
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
     depends_on:
-      - rabbitmq:
-         condition: service_healthy
-      - discovery-server
+      rabbitmq:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
     networks:
       - dresstyle-network
 
-  # Aqui se define el servicio del frontend
   web-frontend:
-    build: ./vue-proyect
+    build: ./vue-project 
     container_name: dresstyle-frontend
     ports:
       - "80:80"
     depends_on:
-      - api-gateway
+      api-gateway:
+        condition: service_started
     networks:
       - dresstyle-network
 

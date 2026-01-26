@@ -5,7 +5,7 @@ spring:
     globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "*" # Si lanzo la aplicacion a producción, aqui debo de poner la url publica de la app
+            allowedOrigins: "http://localhost/ds" # Si lanzo la aplicacion a producción, aqui debo de poner la url publica de la app
             allowedMethods:
               - GET
               - POST
@@ -13,8 +13,13 @@ spring:
               - DELETE
               - OPTIONS
             allowedHeaders: "*"
-      routes:
+        routes:
         - id: auth-service
           uri: lb://authservice
           predicates:
             - Path=/ds/auth/**
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-server:8761/eureka/

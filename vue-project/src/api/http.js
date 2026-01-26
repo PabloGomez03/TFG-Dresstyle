@@ -1,14 +1,8 @@
 import axios from 'axios'
 
-// Tiny axios wrapper configured with baseURL from env and sensible defaults.
-// Usage:
-// import api from '@/api/http'
-// api.get('/users')
-
-const baseURL = import.meta.env.VITE_API_BASE || 'http://localhost:8080/ds'
 
 const http = axios.create({
-  baseURL: baseURL,
+  baseURL: "http://localhost:8080/ds",
   headers: {
     'Content-Type': 'application/json'
   }

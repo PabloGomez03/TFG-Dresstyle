@@ -1,27 +1,23 @@
-# Usamos una imagen de Maven con Java 21 para compilar el proyecto
+# Compilación
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copiamos el archivo de configuración de dependencias
+# Copiar configuración y descargar dependencias para aprovechar la caché
 COPY pom.xml .
-
-# Descargamos las dependencias
 RUN mvn dependency:go-offline
 
-# Copiamos el código fuente y compilamos el .jar saltandonos los tests
+# Copiar el código fuente y compilar
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-
-# Usamos una imagen ligera de solo JRE (Java Runtime Environment)
+# Etapa 2: Imagen final de ejecución
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
-# Copiamos solo el archivo .jar generado en la etapa anterior
+# Copiar el jar generado desde la etapa de build
 COPY --from=build /app/target/*.jar app.jar
 
-# Exponemos el puerto estándar de Spring Boot (se mapeará en el docker-compose)
-EXPOSE 8080
+# Exponer el puerto del microservicio
+EXPOSE 8081
 
-# Comando para ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -46,6 +46,12 @@
             <!-->Dependencia para comprobar el estado de este microservicio, en http://localhost:8081/actuator/health</!-->
         </dependency>
         <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.1.0</version>
+            <!-->Dependencia para probar los servicios REST</!-->
+        </dependency>
+        <dependency>
             <groupId>io.jsonwebtoken</groupId> <!--> Dependencias para JSON Web Token</!-->
             <artifactId>jjwt-impl</artifactId>
             <version>0.11.5</version>

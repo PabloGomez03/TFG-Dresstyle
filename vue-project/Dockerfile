@@ -10,7 +10,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-Producción (Servidor Web)
+#Producción (Servidor Web)
 FROM nginx:stable-alpine AS production-stage
 
 # Copiamos los archivos estáticos al directorio de Nginx
