@@ -5,7 +5,7 @@ import axios from 'axios'
 // import api from '@/api/http'
 // api.get('/users')
 
-const baseURL = import.meta.env.VITE_API_BASE || 'http://localhost:8080/api/'
+const baseURL = import.meta.env.VITE_API_BASE || 'http://localhost:8080/ds'
 
 const http = axios.create({
   baseURL: baseURL,

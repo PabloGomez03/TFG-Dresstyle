@@ -32,7 +32,7 @@ public class User {
     private List<Address> addresses;
 
     // Campo para el servicio de fidelización
-    private boolean suscripcionActiva;
+    private boolean activeSubscription;
 
     @Data
     class Address{

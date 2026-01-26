@@ -4,11 +4,13 @@ package com.dresstyle.service;
 import com.dresstyle.dto.AuthResponse;
 import com.dresstyle.dto.LoginRequest;
 import com.dresstyle.dto.RegisterRequest;
+import com.dresstyle.dto.UserRegisteredEvent;
 import com.dresstyle.repository.UserRepository;
 import com.dresstyle.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -20,6 +22,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService; // Inyectar el servicio de tokens
+    private final RabbitTemplate rabbitTemplate;
 
     public AuthResponse login(LoginRequest request) {
 
@@ -43,23 +46,33 @@ public class AuthService {
                 .build();
     }
 
-    public void registrar(RegisterRequest request) {
+    public void register(RegisterRequest request) {
         //Validar si el email ya existe
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El email ya está registrado");
         }
 
         // Mapear DTO a User y cifrar contraseña
-        User nuevoUsuario = User.builder()
-                .name(request.getNombre())
+        User newUser = User.builder()
+                .name(request.getName())
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .roles(new HashSet<>(Collections.singletonList("ROLE_CLIENTE")))
-                .suscripcionActiva(false)
+                .roles(new HashSet<>(Collections.singletonList("ROLE_CLIENT")))
+                .activeSubscription(false)
                 .build();
 
         // 3. Persistir en MongoDB
-        userRepository.save(nuevoUsuario);
+        userRepository.save(newUser);
+
+        // Crear el evento
+        UserRegisteredEvent event = UserRegisteredEvent.builder()
+                .email(newUser.getEmail())
+                .nombre(newUser.getName())
+                .userId(newUser.getUserId())
+                .build();
+
+        // Publicar el objeto (Spring lo convertirá a JSON automáticamente)
+        rabbitTemplate.convertAndSend("notificationExchange", "registrationRoutingKey", event);
 
     }
 }

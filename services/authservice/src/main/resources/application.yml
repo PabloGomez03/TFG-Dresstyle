@@ -5,7 +5,13 @@ spring:
     mongodb:
       # Usamos 'mongodb' porque es el nombre del servicio en el docker-compose
       uri: mongodb://mongodb:27017/dresstyle_auth
-  
+
+  rabbitmq:
+    host: rabbitmq # Nombre del servicio definido en docker-compose
+    port: 5672
+    username: guest
+    password: guest
+
 eureka:
   client:
     service-url:
@@ -17,4 +23,4 @@ server:
 jwt:
   # Esta clave debe ser una cadena larga en Base64
   secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-  expiration: 86400000 # 24 horas 
+  expiration: 86400000 # 24 horas

@@ -1,0 +1,20 @@
+# Configuración de rutas
+spring:
+  cloud:
+    gateway:
+    globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*" # Si lanzo la aplicacion a producción, aqui debo de poner la url publica de la app
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+      routes:
+        - id: auth-service
+          uri: lb://authservice
+          predicates:
+            - Path=/ds/auth/**

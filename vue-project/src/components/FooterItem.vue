@@ -5,7 +5,7 @@
     <div class="footer-content">
       <div class="footer-section">
         <h3>DresStyle</h3>
-        <p>Tu plataforma de moda exclusiva con muchisimos descuentos.</p>
+        <p>Tu plataforma de moda exclusiva con amplia variedad de productos.</p>
       </div>
       <div class="footer-section">
         <h4>Enlaces</h4>
@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      &copy; 2026 DresStyle - Trabajo de Fin de Grado
+      &copy; 2026 DresStyle
     </div>
   </footer>
 

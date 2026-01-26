@@ -26,7 +26,7 @@ defineProps({
 <template>
   <header class="header">
     <div class="logo" >
-      <router-link to="/">
+      <router-link to="/ds">
 
         <img src="@/img/logo.png" :style="{height: logoHeight}" class="logo-img" />
 
@@ -43,8 +43,8 @@ defineProps({
       </template>
 
       <template v-else>
-        <router-link to="/login">Iniciar Sesión</router-link>
-        <router-link to="/register" class="btn-register">Registrarse</router-link>
+        <router-link to="/ds/auth/login">Iniciar Sesión</router-link>
+        <router-link to="/ds/auth/register" class="btn-register">Registrarse</router-link>
       </template>
 
       <router-link to="/cart">

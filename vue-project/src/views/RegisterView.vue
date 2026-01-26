@@ -2,6 +2,19 @@
 import FooterItem from '@/components/FooterItem.vue';
 import HeaderItem from '@/components/HeaderItem.vue';
 
+function validateEmails() {
+  const email = document.getElementById('email').value;
+  const confirmEmail = document.getElementById('confirm-email').value;
+  const errorMsg = document.getElementById('errorMsg');
+
+  if (email !== confirmEmail) {
+    errorMsg.style.display = 'block';
+    return false;
+  } else {
+    errorMsg.style.display = 'none';
+    return true;
+  }
+}
 
 
 </script>
@@ -25,12 +38,17 @@ import HeaderItem from '@/components/HeaderItem.vue';
 
       <div class="form-group">
         <label for="email">Correo Electrónico</label>
-        <input type="email" id="email" placeholder="Ingresa tu correo electrónico" required />
+        <input @input="validateEmails" type="email" id="email" placeholder="Ingresa tu correo electrónico" required />
       </div>
 
       <div class="form-group">
         <label for="email">Confirmar Correo</label>
-        <input type="email" id="email" placeholder="Vuelve a ingresarlo" required />
+        <input @input="validateEmails" type="email" id="confirm-email" placeholder="Vuelve a ingresarlo" required />
+
+        <div id="errorMsg">
+          <i class="wrong-emails">❌Los correos no coinciden</i>
+        </div>
+
       </div>
 
       <div class="form-group">
@@ -142,6 +160,13 @@ import HeaderItem from '@/components/HeaderItem.vue';
 
 .register-form button:active {
   transform: translateY(0);
+}
+
+#errorMsg {
+  color: red;
+  font-size: 0.75rem;
+  display: none;
+  margin-top: 0.5rem;
 }
 
 @media (max-width: 600px) {
