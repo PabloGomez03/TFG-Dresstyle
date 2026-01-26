@@ -19,7 +19,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Desactivar CSRF para APIs REST
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login","/register").permitAll() // Permitir registro y login sin token. TENGO QUE PONER LAS URL DE LOGIN Y REGISTER
+                        .requestMatchers("/ds/login","/ds/register").permitAll() // Permitir registro y login sin token. TENGO QUE PONER LAS URL DE LOGIN Y REGISTER
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

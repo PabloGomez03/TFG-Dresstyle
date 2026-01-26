@@ -10,13 +10,10 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-#Producción (Servidor Web)
-FROM nginx:stable-alpine AS production-stage
-
-# Copiamos los archivos estáticos al directorio de Nginx
+FROM nginx:stable-alpine as production-stage
+# Copiamos nuestro archivo de configuración personalizado
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copiamos los archivos compilados
 COPY --from=build-stage /app/dist /usr/share/nginx/html
-
-# Exponemos el puerto 80 para el tráfico web
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]

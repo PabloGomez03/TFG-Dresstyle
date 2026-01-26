@@ -1,5 +1,11 @@
 # Configuración de rutas
 spring:
+security:
+  user:
+      name: admin
+      password: admin
+  main:
+    web-application-type: reactive
   cloud:
     gateway:
     globalcors:
