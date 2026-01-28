@@ -1,11 +1,19 @@
 <script setup>
 import FooterItem from '@/components/FooterItem.vue';
 import HeaderItem from '@/components/HeaderItem.vue';
+import http from '@/api/http';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+var name = ref('');
+var email = ref('');
+var password = ref('');
 
 function validateEmails() {
-  const email = document.getElementById('email').value;
-  const confirmEmail = document.getElementById('confirm-email').value;
-  const errorMsg = document.getElementById('errorMsg');
+  let email = document.getElementById('email').value;
+  let confirmEmail = document.getElementById('confirm-email').value;
+  let errorMsg = document.getElementById('errorMsg');
 
   if (email !== confirmEmail) {
     errorMsg.style.display = 'block';
@@ -16,7 +24,25 @@ function validateEmails() {
   }
 }
 
+const registerUser = async () => {
+  if (!validateEmails()) {
+    return;
+  }
 
+  try {
+    await http.post('/auth/register', {
+      name: name.value,
+      email: email.value,
+      password: password.value
+    });
+    alert("¡Registro con éxito!");
+    router.push('/login');
+  } catch (error) {
+    console.error("Error en registro:", error);
+    alert("Fallo en el registro: " + (error.response?.data || "Servidor no disponible"));
+  }
+
+};
 </script>
 
 <template>
@@ -27,23 +53,23 @@ function validateEmails() {
 
   <div class="content">
 
-    <form class="register-form" action="/register" method="POST">
+    <form class="register-form" @submit.prevent="registerUser">
 
       <h2>Registrarse</h2>
 
       <div class="form-group">
         <label for="username">Nombre de Usuario</label>
-        <input type="text" id="username" placeholder="Ingresa tu nombre de usuario" required />
+        <input v-model="name" type="text" id="username" placeholder="Ingresa tu nombre de usuario" required />
       </div>
 
       <div class="form-group">
         <label for="email">Correo Electrónico</label>
-        <input @input="validateEmails" type="email" id="email" placeholder="Ingresa tu correo electrónico" required />
+        <input v-model="email" @input="validateEmails" type="email" id="email" placeholder="Ingresa tu correo electrónico" required />
       </div>
 
       <div class="form-group">
         <label for="email">Confirmar Correo</label>
-        <input @input="validateEmails" type="email" id="confirm-email" placeholder="Vuelve a ingresarlo" required />
+        <input v-model="confirmEmail" @input="validateEmails" type="email" id="confirm-email" placeholder="Vuelve a ingresarlo" required />
 
         <div id="errorMsg">
           <i class="wrong-emails">❌Los correos no coinciden</i>
@@ -53,7 +79,7 @@ function validateEmails() {
 
       <div class="form-group">
         <label for="password">Contraseña</label>
-        <input type="password" id="password" placeholder="Crea una contraseña" required />
+        <input v-model="password" type="password" id="password" placeholder="Crea una contraseña" required />
       </div>
 
       <button type="submit">Registrarse</button>
