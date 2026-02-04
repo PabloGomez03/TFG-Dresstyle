@@ -1,6 +1,31 @@
 <script setup>
 import HeaderItem from '@/components/HeaderItem.vue'
-import FooterItem from '@/components/FooterItem.vue';
+import FooterItem from '@/components/FooterItem.vue'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+
+const authStore = useAuthStore()
+const router = useRouter()
+
+const email = ref('')
+const password = ref('')
+const errorMessage = ref('')
+
+const handleLogin = async () => {
+  errorMessage.value = ''
+  
+  const result = await authStore.login({
+    email: email.value,
+    password: password.value
+  })
+  
+  if (result.success) {
+    router.push('/')
+  } else {
+    errorMessage.value = result.message || 'Error al iniciar sesión'
+  }
+}
 
 </script>
 
@@ -13,16 +38,35 @@ import FooterItem from '@/components/FooterItem.vue';
 
   <div class="content">
 
-    <form class="login-form" action ="/login" method="POST">
+    <form class="login-form" @submit.prevent="handleLogin">
 
       <h2>Iniciar Sesión</h2>
+      
+      <div v-if="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+      
       <div class="form-group">
         <label for="email">Correo Electrónico</label>
-        <input type="email" id="email" placeholder="Ingresa tu correo electrónico" required />
+        <input 
+          v-model="email"
+          type="email" 
+          id="email" 
+          name="email"
+          placeholder="Ingresa tu correo electrónico" 
+          required 
+        />
       </div>
       <div class="form-group">
         <label for="password">Contraseña</label>
-        <input type="password" id="password" placeholder="Ingresa tu contraseña" required />
+        <input 
+          v-model="password"
+          type="password" 
+          id="password" 
+          name="password"
+          placeholder="Ingresa tu contraseña" 
+          required 
+        />
       </div>
       <button type="submit">Iniciar Sesión</button>
     </form>
@@ -130,6 +174,16 @@ import FooterItem from '@/components/FooterItem.vue';
 
 .login-form button:active {
   transform: translateY(0);
+}
+
+.error-message {
+  background-color: #fee;
+  color: #c33;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 @media (max-width: 600px) {

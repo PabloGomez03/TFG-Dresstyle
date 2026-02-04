@@ -1,31 +1,25 @@
 # Configuración de rutas
 spring:
-security:
-  user:
-    name: admin
-    password: admin
   main:
     web-application-type: reactive
   cloud:
     gateway:
-    globalcors:
-      cors-configurations:
-        "[/**]":
-          allowedOrigins: "http://localhost" # Si lanzo la aplicacion a producción, aqui debo de poner la url publica de la app
-          allowedMethods:
-            - GET
-            - POST
-            - PUT
-            - DELETE
-            - OPTIONS
-          allowedHeaders: "*"
+      globalcors:
+        corsConfigurations:
+          "[/**]":
+            allowedOrigins: "http://localhost"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
       routes:
         - id: auth-service
-          uri: lb://authservice
+          uri: lb://AUTH-SERVICE
           predicates:
-            - Path=/ds/auth/**
-          filters:
-            - RewritePath=/ds/(?<segment>.*), /$\{segment}
+            - Path=/api/auth/**
 
 eureka:
   client:

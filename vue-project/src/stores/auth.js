@@ -12,7 +12,7 @@ export const useAuthStore = defineStore('auth', {
     async login(credentials) {
       try {
         // Petición al endpoint que definimos en el AuthController del backend
-        const response = await http.post('/auth/login', credentials);
+        const response = await http.post('/api/auth/login', credentials);
 
         const { token, userId, email, roles } = response.data;
 

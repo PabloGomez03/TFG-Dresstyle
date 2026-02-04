@@ -1,101 +1,116 @@
 <script setup>
-import FooterItem from '@/components/FooterItem.vue';
-import HeaderItem from '@/components/HeaderItem.vue';
-import http from '@/api/http';
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import FooterItem from '@/components/FooterItem.vue'
+import HeaderItem from '@/components/HeaderItem.vue'
+import http from '@/api/http'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
-var name = ref('');
-var email = ref('');
-var password = ref('');
+const router = useRouter()
+var name = ref('')
+var email = ref('')
+var password = ref('')
 
 function validateEmails() {
-  let email = document.getElementById('email').value;
-  let confirmEmail = document.getElementById('confirm-email').value;
-  let errorMsg = document.getElementById('errorMsg');
+  let email = document.getElementById('email').value
+  let confirmEmail = document.getElementById('confirm-email').value
+  let errorMsg = document.getElementById('errorMsg')
 
   if (email !== confirmEmail) {
-    errorMsg.style.display = 'block';
-    return false;
+    errorMsg.style.display = 'block'
+    return false
   } else {
-    errorMsg.style.display = 'none';
-    return true;
+    errorMsg.style.display = 'none'
+    return true
   }
 }
 
 const registerUser = async () => {
   if (!validateEmails()) {
-    return;
+    return
   }
 
   try {
-    await http.post('/auth/register', {
+    await http.post('/api/auth/register', {
       name: name.value,
       email: email.value,
-      password: password.value
-    });
-    alert("¡Registro con éxito!");
-    router.push('/login');
+      password: password.value,
+    })
+    alert('¡Registro con éxito!')
+    router.push('/auth/login')
   } catch (error) {
-    console.error("Error en registro:", error);
-    alert("Fallo en el registro: " + (error.response?.data || "Servidor no disponible"));
+    console.error('Error en registro:', error)
+    alert('Fallo en el registro: ' + (error.response?.data || 'Servidor no disponible'))
   }
-
-};
+}
 </script>
 
 <template>
+  <HeaderItem class="main-header" />
 
-<HeaderItem class="main-header"/>
+  <div class="register-view">
+    <div class="content">
+      <form class="register-form" @submit.prevent="registerUser">
+        <h2>Registrarse</h2>
 
-<div class="register-view">
-
-  <div class="content">
-
-    <form class="register-form" @submit.prevent="registerUser">
-
-      <h2>Registrarse</h2>
-
-      <div class="form-group">
-        <label for="username">Nombre de Usuario</label>
-        <input v-model="name" type="text" id="username" placeholder="Ingresa tu nombre de usuario" required />
-      </div>
-
-      <div class="form-group">
-        <label for="email">Correo Electrónico</label>
-        <input v-model="email" @input="validateEmails" type="email" id="email" placeholder="Ingresa tu correo electrónico" required />
-      </div>
-
-      <div class="form-group">
-        <label for="email">Confirmar Correo</label>
-        <input v-model="confirmEmail" @input="validateEmails" type="email" id="confirm-email" placeholder="Vuelve a ingresarlo" required />
-
-        <div id="errorMsg">
-          <i class="wrong-emails">❌Los correos no coinciden</i>
+        <div class="form-group">
+          <label for="username">Nombre de Usuario</label>
+          <input
+            v-model="name"
+            type="text"
+            id="username"
+            placeholder="Ingresa tu nombre de usuario"
+            required
+          />
         </div>
 
-      </div>
+        <div class="form-group">
+          <label for="email">Correo Electrónico</label>
+          <input
+            v-model="email"
+            @input="validateEmails"
+            type="email"
+            id="email"
+            placeholder="Ingresa tu correo electrónico"
+            required
+          />
+        </div>
 
-      <div class="form-group">
-        <label for="password">Contraseña</label>
-        <input v-model="password" type="password" id="password" placeholder="Crea una contraseña" required />
-      </div>
+        <div class="form-group">
+          <label for="email">Confirmar Correo</label>
+          <input
+            v-model="confirmEmail"
+            @input="validateEmails"
+            type="email"
+            id="confirm-email"
+            placeholder="Vuelve a ingresarlo"
+            required
+          />
 
-      <button type="submit">Registrarse</button>
+          <div id="errorMsg">
+            <i class="wrong-emails">❌Los correos no coinciden</i>
+          </div>
+        </div>
 
-    </form>
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input
+            v-model="password"
+            type="password"
+            id="password"
+            placeholder="Crea una contraseña"
+            required
+          />
+        </div>
 
+        <button type="submit">Registrarse</button>
+      </form>
+    </div>
   </div>
 
-</div>
-
-<FooterItem class="main-footer"/>
-
+  <FooterItem class="main-footer" />
 </template>
 
 <style scoped>
-
 .register-view {
   display: flex;
   flex-direction: column; /*Ocupa toda la altura de la ventana de home*/
@@ -209,5 +224,4 @@ const registerUser = async () => {
     padding: 1rem;
   }
 }
-
 </style>
