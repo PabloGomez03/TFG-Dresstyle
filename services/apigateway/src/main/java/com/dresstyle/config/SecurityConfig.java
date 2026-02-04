@@ -17,12 +17,11 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
-                .csrf(csrf -> csrf.disable()) // APIs REST no necesitan CSRF
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable()) // Desactivar CSRF para permitir POST
                 .authorizeExchange(exchanges -> exchanges
-                        // RUTAS PÚBLICAS - Sin autenticación
-                        .pathMatchers("/api/auth/**").permitAll()
-                        // TODAS LAS DEMÁS RUTAS - Requieren autenticación
+                        .pathMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // Permitir pre-flight de CORS
+                        .pathMatchers("/auth/**").permitAll() // Rutas reescritas permitidas
                         .anyExchange().authenticated()
                 );
         return http.build();
@@ -32,7 +31,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("http://localhost:*", "http://localhost"));
+        config.setAllowedOriginPatterns(List.of("http://localhost:*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

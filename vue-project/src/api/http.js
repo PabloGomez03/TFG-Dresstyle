@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost'
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
 
 const http = axios.create({
   baseURL: baseURL,
@@ -16,13 +16,13 @@ http.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
-  
+
   // Obtener token CSRF de las cookies
   const csrfToken = getCookie('XSRF-TOKEN')
   if (csrfToken) {
     config.headers['X-XSRF-TOKEN'] = csrfToken
   }
-  
+
   return config
 })
 

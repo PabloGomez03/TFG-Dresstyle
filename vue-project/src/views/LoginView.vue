@@ -14,72 +14,60 @@ const errorMessage = ref('')
 
 const handleLogin = async () => {
   errorMessage.value = ''
-  
+
   const result = await authStore.login({
     email: email.value,
-    password: password.value
+    password: password.value,
   })
-  
+
   if (result.success) {
     router.push('/')
   } else {
     errorMessage.value = result.message || 'Error al iniciar sesión'
   }
 }
-
 </script>
 
-
 <template>
+  <div class="login-view">
+    <HeaderItem class="main-header" />
 
-<div class="login-view">
+    <div class="content">
+      <form class="login-form" @submit.prevent="handleLogin">
+        <h2>Iniciar Sesión</h2>
 
-  <HeaderItem class="main-header"/>
+        <div v-if="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
 
-  <div class="content">
+        <div class="form-group">
+          <label for="email">Correo Electrónico</label>
+          <input
+            v-model="email"
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Ingresa tu correo electrónico"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input
+            v-model="password"
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Ingresa tu contraseña"
+            required
+          />
+        </div>
+        <button type="submit">Iniciar Sesión</button>
+      </form>
+    </div>
 
-    <form class="login-form" @submit.prevent="handleLogin">
-
-      <h2>Iniciar Sesión</h2>
-      
-      <div v-if="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
-      
-      <div class="form-group">
-        <label for="email">Correo Electrónico</label>
-        <input 
-          v-model="email"
-          type="email" 
-          id="email" 
-          name="email"
-          placeholder="Ingresa tu correo electrónico" 
-          required 
-        />
-      </div>
-      <div class="form-group">
-        <label for="password">Contraseña</label>
-        <input 
-          v-model="password"
-          type="password" 
-          id="password" 
-          name="password"
-          placeholder="Ingresa tu contraseña" 
-          required 
-        />
-      </div>
-      <button type="submit">Iniciar Sesión</button>
-    </form>
-
-
-
-
+    <FooterItem class="main-footer" />
   </div>
-
-  <FooterItem  class="main-footer"/>
-
-  </div>
-
 </template>
 
 <style scoped>
@@ -200,5 +188,4 @@ const handleLogin = async () => {
     padding: 1rem;
   }
 }
-
 </style>
