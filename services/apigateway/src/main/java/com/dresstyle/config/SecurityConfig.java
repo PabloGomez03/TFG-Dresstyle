@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
@@ -14,14 +16,16 @@ import java.util.List;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
+
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable()) // Desactivar CSRF para permitir POST
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // Permitir pre-flight de CORS
+                        .pathMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .pathMatchers("/auth/**").permitAll() // Rutas reescritas permitidas
+                        .pathMatchers("/actuator/**").permitAll() // Visualizar rutas en el navegador
                         .anyExchange().authenticated()
                 );
         return http.build();
