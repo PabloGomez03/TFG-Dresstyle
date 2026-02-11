@@ -6,10 +6,10 @@ spring:
     web-application-type: reactive
   cloud:
     gateway:
-      discovery:
+    discovery:
         locator:
           enabled: true
-      routes:
+    routes:
         - id: auth-service
           uri: lb://AUTH-SERVICE
           predicates:

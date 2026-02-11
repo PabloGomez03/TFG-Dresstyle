@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // Permitir peticiones desde el frontend
 public class AuthController {
 
     private final AuthService authService;
