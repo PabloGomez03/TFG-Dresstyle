@@ -16,6 +16,7 @@ spring:
         cors-configurations:
           '[/**]': # Aplica a todas las rutas
             allowedOrigins:
+              - "http://localhost:5173"
               - "http://localhost"
               - "http://localhost:80"
               - "http://127.0.0.1"
@@ -32,9 +33,9 @@ spring:
 
       routes:
         - id: auth-service
-          uri: lb://AUTH-SERVICE
+          uri: lb://auth-service
           predicates:
-            - Path=/api/auth/**
+            - Path=/auth/**
 
 
 management:

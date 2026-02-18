@@ -15,7 +15,7 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
-                .csrf(csrf -> csrf.disable()) // Desactivar CSRF para permitir POST
+                .csrf(ServerHttpSecurity.CsrfSpec::disable) // Desactivar CSRF para permitir POST
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .pathMatchers("/auth/**").permitAll() // Rutas reescritas permitidas
