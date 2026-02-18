@@ -30,7 +30,7 @@ const registerUser = async () => {
   }
 
   try {
-    await http.post('/api/auth/register', {
+    await http.post('/auth/register', {
       name: name.value,
       email: email.value,
       password: password.value,

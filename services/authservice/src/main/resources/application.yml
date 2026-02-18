@@ -4,7 +4,7 @@ spring:
   data:
     mongodb:
       # Usamos 'mongodb' porque es el nombre del servicio en el docker-compose
-      uri: mongodb://mongodb:27017/dresstyle_auth
+      uri: mongodb://mongodb:27017/dresstyle-mongodb
 
   rabbitmq:
     host: rabbitmq # Nombre del servicio definido en docker-compose
