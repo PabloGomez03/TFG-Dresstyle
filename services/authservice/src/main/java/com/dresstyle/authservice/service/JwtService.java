@@ -1,8 +1,8 @@
-package com.dresstyle.service;
+package com.dresstyle.authservice.service;
 
 
 
-import com.dresstyle.model.User;
+import com.dresstyle.authservice.model.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;

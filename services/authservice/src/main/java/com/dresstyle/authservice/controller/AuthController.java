@@ -1,9 +1,9 @@
-package com.dresstyle.controller;
+package com.dresstyle.authservice.controller;
 
-import com.dresstyle.dto.AuthResponse;
-import com.dresstyle.dto.LoginRequest;
-import com.dresstyle.dto.RegisterRequest;
-import com.dresstyle.service.AuthService;
+import com.dresstyle.authservice.dto.AuthResponse;
+import com.dresstyle.authservice.dto.LoginRequest;
+import com.dresstyle.authservice.dto.RegisterRequest;
+import com.dresstyle.authservice.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

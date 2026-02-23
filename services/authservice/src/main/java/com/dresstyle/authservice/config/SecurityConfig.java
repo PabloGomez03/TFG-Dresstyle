@@ -1,4 +1,4 @@
-package com.dresstyle.config;
+package com.dresstyle.authservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -14,13 +14,12 @@ export default defineConfig({
   // Dev server proxy: forward requests starting with /api to the Spring backend
   // This avoids CORS during development. The backend is expected at http://localhost:8080
   server: {
+    port:5173,
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
-        // Remove the /api prefix when forwarding if your Spring controllers don't expect it
-        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },

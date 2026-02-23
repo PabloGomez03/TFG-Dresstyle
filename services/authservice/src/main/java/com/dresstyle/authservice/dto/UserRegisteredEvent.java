@@ -1,4 +1,4 @@
-package com.dresstyle.dto; // El paquete debe ser igual en ambos si es posible
+package com.dresstyle.authservice.dto; // El paquete debe ser igual en ambos si es posible
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

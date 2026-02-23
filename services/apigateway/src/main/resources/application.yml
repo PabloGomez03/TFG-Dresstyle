@@ -5,37 +5,16 @@ spring:
     web-application-type: reactive
   cloud:
     gateway:
-      # 1. Configuración de Discovery (Eureka Locator)
       discovery:
         locator:
           enabled: true
-
-
-      globalcors:
-        add-to-simple-url-handler-mapping: true
-        cors-configurations:
-          '[/**]': # Aplica a todas las rutas
-            allowedOrigins:
-              - "http://localhost:5173"
-              - "http://localhost"
-              - "http://localhost:80"
-              - "http://127.0.0.1"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS             # Obligatorio para el Preflight
-            allowedHeaders: "*"     # Permite Authorization, Content-Type, etc.
-            allowCredentials: true
-            maxAge: 3600            # Cachea la respuesta del preflight 1 hora
-
-
       routes:
         - id: auth-service
           uri: lb://auth-service
           predicates:
             - Path=/auth/**
+          filters:
+            - StripPrefix=1
 
 
 management:
@@ -51,3 +30,8 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://discovery-server:8761/eureka/
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web: DEBUG

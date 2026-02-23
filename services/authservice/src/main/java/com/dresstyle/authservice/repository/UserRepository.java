@@ -1,6 +1,6 @@
-package com.dresstyle.repository;
+package com.dresstyle.authservice.repository;
 
-import com.dresstyle.model.User;
+import com.dresstyle.authservice.model.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 

@@ -38,9 +38,19 @@ const registerUser = async () => {
     alert('¡Registro con éxito!')
     router.push('/auth/login')
   } catch (error) {
-    console.error('Error en registro:', error)
-    alert('Fallo en el registro: ' + (error.response?.data || 'Servidor no disponible'))
-  }
+    if (error.response) {
+
+        console.error("Data del error:", error.response.data);
+        console.error("Status HTTP:", error.response.status);
+
+        const backendMessage = error.response.data.message || error.response.data.error || "Error desconocido";
+        alert("Fallo en el servidor: " + backendMessage);
+    } else if (error.request) {
+        console.error("No hay respuesta del servidor", error.request);
+    } else {
+        console.error("Error en Axios", error.message);
+    }
+}
 }
 </script>
 

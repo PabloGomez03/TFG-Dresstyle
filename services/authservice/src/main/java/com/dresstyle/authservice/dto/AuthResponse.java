@@ -1,4 +1,4 @@
-package com.dresstyle.dto;
+package com.dresstyle.authservice.dto;
 
 import lombok.Builder;
 import lombok.Data;

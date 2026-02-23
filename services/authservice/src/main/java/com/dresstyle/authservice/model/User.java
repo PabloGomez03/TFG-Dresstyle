@@ -1,4 +1,4 @@
-package com.dresstyle.model;
+package com.dresstyle.authservice.model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

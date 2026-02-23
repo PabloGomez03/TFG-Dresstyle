@@ -1,12 +1,12 @@
-package com.dresstyle.service;
+package com.dresstyle.authservice.service;
 
 
-import com.dresstyle.dto.AuthResponse;
-import com.dresstyle.dto.LoginRequest;
-import com.dresstyle.dto.RegisterRequest;
-import com.dresstyle.dto.UserRegisteredEvent;
-import com.dresstyle.repository.UserRepository;
-import com.dresstyle.model.User;
+import com.dresstyle.authservice.dto.AuthResponse;
+import com.dresstyle.authservice.dto.LoginRequest;
+import com.dresstyle.authservice.dto.RegisterRequest;
+import com.dresstyle.authservice.dto.UserRegisteredEvent;
+import com.dresstyle.authservice.repository.UserRepository;
+import com.dresstyle.authservice.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

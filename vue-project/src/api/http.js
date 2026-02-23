@@ -6,16 +6,16 @@ const http = axios.create({
   baseURL: baseURL,
   headers: {
     'Content-Type': 'application/json',
-  },
-  withCredentials: true, // Importante para enviar cookies CSRF
+  }
 })
 
 // Interceptor para agregar token JWT y CSRF
 http.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
-  if (token) {
+
+  if (token && token !== 'undefined') {
     config.headers.Authorization = `Bearer ${token}`
-  }
+}
 
   // Obtener token CSRF de las cookies
   const csrfToken = getCookie('XSRF-TOKEN')
