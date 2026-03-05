@@ -1,1 +1,32 @@
-spring.application.name=catalogservice
+spring:
+  application:
+    name: catalog-service
+  mongodb:
+    uri: ${SPRING_MONGODB_URI:mongodb://mongodb:27017/dresstyle_catalog}
+  data:
+    mongodb:
+      # Usamos 'mongodb' porque es el nombre del servicio en el docker-compose
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://mongodb:27017/dresstyle_catalog}
+
+  rabbitmq:
+    host: rabbitmq # Nombre del servicio definido en docker-compose
+    port: 5672
+    username: guest
+    password: guest
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka/
+
+server:
+  port: 8082 # Puerto específico para este servicio
+
+jwt:
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web: DEBUG
