@@ -1,10 +1,12 @@
 spring:
   application:
     name: auth-service
+  mongodb:
+    uri: ${SPRING_MONGODB_URI:mongodb://mongodb:27017/dresstyle_auth}
   data:
     mongodb:
       # Usamos 'mongodb' porque es el nombre del servicio en el docker-compose
-      uri: mongodb://mongodb:27017/dresstyle-mongodb
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://mongodb:27017/dresstyle_auth}
 
   rabbitmq:
     host: rabbitmq # Nombre del servicio definido en docker-compose
@@ -23,7 +25,7 @@ server:
 
 jwt:
   # Esta clave debe ser una cadena larga en Base64
-  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
   expiration: 86400000 # 24 horas
 
 logging:

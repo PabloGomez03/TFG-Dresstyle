@@ -12,11 +12,10 @@ spring:
         - id: auth-service
           uri: lb://auth-service
           predicates:
-            - Path=/auth/**
+            - Path=/api/auth/**
           filters:
             - StripPrefix=1
-
-
+          
 management:
   endpoints:
     web:
@@ -31,7 +30,5 @@ eureka:
     serviceUrl:
       defaultZone: http://discovery-server:8761/eureka/
 
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
-    org.springframework.web: DEBUG
+jwt:
+  secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}

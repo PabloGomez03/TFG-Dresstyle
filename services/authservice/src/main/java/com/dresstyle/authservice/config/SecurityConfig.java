@@ -23,7 +23,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             //PERMISOS DE RUTAS: Permitir el paso al controlador de autenticación
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**", "/error").permitAll()
+                .requestMatchers("/auth/**", "/exception").permitAll()
                 .anyRequest().authenticated()
             );
 

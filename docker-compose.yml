@@ -38,6 +38,7 @@ services:
       - "8080:8080"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
     depends_on:
       discovery-server:
         condition: service_started
@@ -50,6 +51,10 @@ services:
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/dresstyle_auth
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      - ADMIN_NAME=admin
+      - ADMIN_EMAIL=admin@admin.com
+      - ADMIN_PASSWORD=admin
     depends_on:
       mongodb:
         condition: service_started

@@ -1,13 +1,27 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
+import { computed } from 'vue';
 
 const authStore = useAuthStore();
 const router = useRouter();
 
+/*const userRoles = computed(() => {
+  const roles = authStore.user?.roles;
+  return Array.isArray(roles) ? roles : roles ? [roles] : [];
+});*/
+
+const isAdmin = computed(() => {
+  return authStore.isAdmin;
+});
+
+const isUser = computed(() => {
+  return authStore.isAuthenticated && !isAdmin.value;
+});
+
 const logout = () => {
   authStore.logout();
-  router.push('/login');
+  router.push('/');
 };
 
 defineProps({
@@ -37,8 +51,12 @@ defineProps({
       <input type="text" placeholder="Busca algun producto" class="search"/>
 
     <nav class="nav">
-      <template v-if="authStore.isAuthenticated">
-        <router-link to="/perfil">Mi Perfil</router-link>
+      <template v-if="isAdmin">
+        <button @click="logout" class="btn-logout">Cerrar Sesión</button>
+      </template>
+
+      <template v-else-if="isUser">
+         <router-link to="/profile">Mi Perfil</router-link>
         <button @click="logout" class="btn-logout">Cerrar Sesión</button>
       </template>
 
@@ -47,10 +65,6 @@ defineProps({
         <router-link to="/auth/register" class="btn-register">Registrarse</router-link>
       </template>
 
-      <router-link to="/cart">
-         <img src="@/img/cart.png" :style="{height: cartHeight}" class="cart-img" />
-
-      </router-link>
     </nav>
   </header>
 </template>
@@ -88,17 +102,18 @@ defineProps({
 
 .btn-logout {
   background: none;
-  border: 1px solid #ff4d4d;
+  border: 2px solid #ff4d4d;
+  border-radius: 999px;
   color: #ff4d4d;
+  font-family: inherit;
   margin-left: 1.5rem;
   padding: 0.3rem 0.8rem;
   cursor: pointer;
 }
 
-.btn-logout button:hover {
-
-  color: rgb(73, 73, 73);
-
+.btn-logout:hover {
+  background-color: #ff4d4d;
+  color: #ffffff;
 }
 .btn-register {
   background-color: #3498db;

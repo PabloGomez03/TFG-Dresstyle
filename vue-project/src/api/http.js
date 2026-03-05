@@ -17,7 +17,7 @@ http.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`
 }
 
-  // Obtener token CSRF de las cookies
+
   const csrfToken = getCookie('XSRF-TOKEN')
   if (csrfToken) {
     config.headers['X-XSRF-TOKEN'] = csrfToken
@@ -25,6 +25,19 @@ http.interceptors.request.use((config) => {
 
   return config
 })
+
+http.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status
+
+    if (status === 401 || status === 403) {
+      localStorage.removeItem('token')
+    }
+
+    return Promise.reject(error)
+  }
+)
 
 // Función auxiliar para leer cookies
 function getCookie(name) {

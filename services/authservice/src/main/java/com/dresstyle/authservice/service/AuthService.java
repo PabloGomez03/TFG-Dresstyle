@@ -5,6 +5,7 @@ import com.dresstyle.authservice.dto.AuthResponse;
 import com.dresstyle.authservice.dto.LoginRequest;
 import com.dresstyle.authservice.dto.RegisterRequest;
 import com.dresstyle.authservice.dto.UserRegisteredEvent;
+import com.dresstyle.authservice.exception.ExistingEmailException;
 import com.dresstyle.authservice.repository.UserRepository;
 import com.dresstyle.authservice.model.User;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,7 @@ public class AuthService {
     public void register(RegisterRequest request) {
         //Validar si el email ya existe
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("El email ya está registrado");
+            throw new ExistingEmailException("Ya existe un usuario con el mismo email!");
         }
 
         // Mapear DTO a User y cifrar contraseña

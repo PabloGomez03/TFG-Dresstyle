@@ -21,9 +21,24 @@ const handleLogin = async () => {
   })
 
   if (result.success) {
-    router.push('/')
+    if (result.isAdmin) {
+
+      router.push('/admin')
+
+    }
+    else{
+
+      router.push('/')
+    }
+
   } else {
-    errorMessage.value = result.message || 'Error al iniciar sesión'
+
+    if(result.status === 403) {
+      errorMessage.value = 'Correo electrónico o contraseña incorrectos'
+    } else {
+      errorMessage.value = result.message || 'Error al iniciar sesión'
+    }
+
   }
 }
 </script>
@@ -36,9 +51,6 @@ const handleLogin = async () => {
       <form class="login-form" @submit.prevent="handleLogin">
         <h2>Iniciar Sesión</h2>
 
-        <div v-if="errorMessage" class="error-message">
-          {{ errorMessage }}
-        </div>
 
         <div class="form-group">
           <label for="email">Correo Electrónico</label>
@@ -62,6 +74,11 @@ const handleLogin = async () => {
             required
           />
         </div>
+
+        <div v-if="errorMessage" class="error-msg">
+          <i class="weak-password">{{ errorMessage }}</i>
+        </div>
+
         <button type="submit">Iniciar Sesión</button>
       </form>
     </div>
@@ -76,6 +93,7 @@ const handleLogin = async () => {
   flex-direction: column; /*Ocupa toda la altura de la ventana de home*/
   min-height: 100vh;
 }
+
 
 .main-footer {
   /* Empuja el componente al final del contenedor */
@@ -110,6 +128,10 @@ const handleLogin = async () => {
 
 .form-group {
   margin-bottom: 1.5rem;
+}
+
+.form-group:last-of-type {
+  margin-bottom: 0.25rem;
 }
 
 .form-group label {
@@ -164,15 +186,13 @@ const handleLogin = async () => {
   transform: translateY(0);
 }
 
-.error-message {
-  background-color: #fee;
-  color: #c33;
-  padding: 0.75rem;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  text-align: center;
+
+.error-msg {
+  color: red;
+  font-size: 0.75rem;
+  margin-top: 0;
 }
+
 
 @media (max-width: 600px) {
   .login-form {
