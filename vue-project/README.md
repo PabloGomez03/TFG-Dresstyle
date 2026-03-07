@@ -37,6 +37,19 @@ npm run dev
 npm run build
 ```
 
+## Cloudinary (subida de imágenes)
+
+1. Crea una cuenta en Cloudinary.
+2. Crea un upload preset de tipo unsigned.
+3. Configura estas variables en .env.development y .env.production:
+
+```sh
+VITE_CLOUDINARY_CLOUD_NAME=tu_cloud_name
+VITE_CLOUDINARY_UPLOAD_PRESET=tu_unsigned_preset
+```
+
+El panel de administración sube la imagen a Cloudinary y guarda la URL en imageUrl del producto.
+
 ### Run Unit Tests with [Vitest](https://vitest.dev/)
 
 ```sh

@@ -1,48 +1,65 @@
 <script setup>
 import HeaderItem from '@/components/HeaderItem.vue'
 import FooterItem from '@/components/FooterItem.vue'
-import { computed, ref } from 'vue'
+import http from '@/api/http'
+import { computed, onMounted, ref } from 'vue'
 
-const STORAGE_KEY = 'admin_products'
+const CLOUDINARY_CLOUD_NAME = (import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '').trim()
+const CLOUDINARY_UPLOAD_PRESET = (import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || '').trim()
 
-const products = ref(loadProducts())
+const products = ref([])
 const editingId = ref(null)
 const isModalOpen = ref(false)
+const selectedImageFile = ref(null)
+const isUploadingImage = ref(false)
+const isLoadingProducts = ref(false)
+const isSavingProduct = ref(false)
 const message = ref('')
 const errorMessage = ref('')
 
 const form = ref({
   name: '',
   description: '',
+  imageUrl: '',
   price: '',
   stock: ''
 })
 
 const isEditing = computed(() => editingId.value !== null)
 
-function loadProducts() {
-  const rawProducts = localStorage.getItem(STORAGE_KEY)
-  if (!rawProducts) return []
+onMounted(() => {
+  fetchProducts()
+})
 
-  try {
-    const parsedProducts = JSON.parse(rawProducts)
-    return Array.isArray(parsedProducts) ? parsedProducts : []
-  } catch {
-    return []
-  }
+function getErrorMessage(error, fallbackMessage) {
+  return error?.response?.data?.message || error?.message || fallbackMessage
 }
 
-function persistProducts() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(products.value))
+async function fetchProducts() {
+  clearFeedback()
+  isLoadingProducts.value = true
+
+  try {
+    const response = await http.get('/catalog/products')
+    products.value = Array.isArray(response.data) ? response.data : []
+  } catch (error) {
+    products.value = []
+    errorMessage.value = getErrorMessage(error, 'No se pudieron cargar los productos.')
+  } finally {
+    isLoadingProducts.value = false
+  }
 }
 
 function resetForm() {
   form.value = {
     name: '',
     description: '',
+    imageUrl: '',
     price: '',
     stock: ''
   }
+  selectedImageFile.value = null
+  isUploadingImage.value = false
   editingId.value = null
 }
 
@@ -56,10 +73,11 @@ function openEditModal(product) {
   clearFeedback()
   editingId.value = product.id
   form.value = {
-    name: product.name,
-    description: product.description,
-    price: String(product.price),
-    stock: String(product.stock)
+    name: product.name || '',
+    description: product.description || '',
+    imageUrl: product.imageUrl || '',
+    price: String(product.price ?? ''),
+    stock: String(product.stock ?? '')
   }
   isModalOpen.value = true
 }
@@ -79,6 +97,10 @@ function validateForm() {
     return 'El nombre del producto es obligatorio.'
   }
 
+  if (!form.value.imageUrl.trim()) {
+    return 'Sube una imagen a Cloudinary antes de guardar el producto.'
+  }
+
   const parsedPrice = Number(form.value.price)
   if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
     return 'El precio debe ser un número mayor que 0.'
@@ -92,7 +114,65 @@ function validateForm() {
   return null
 }
 
-function saveProduct() {
+function onImageSelected(event) {
+  const selectedFile = event.target.files?.[0] || null
+  selectedImageFile.value = selectedFile
+
+  if (selectedFile) {
+    uploadImageToCloudinary()
+  }
+}
+
+async function uploadImageToCloudinary() {
+  clearFeedback()
+
+  if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
+    errorMessage.value = 'Configura VITE_CLOUDINARY_CLOUD_NAME y VITE_CLOUDINARY_UPLOAD_PRESET en el .env.'
+    return
+  }
+
+  if (!selectedImageFile.value) {
+    errorMessage.value = 'Selecciona una imagen antes de subirla.'
+    return
+  }
+
+  isUploadingImage.value = true
+
+  try {
+    const payload = new FormData()
+    payload.append('file', selectedImageFile.value)
+    payload.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+      method: 'POST',
+      body: payload
+    })
+
+    if (!response.ok) {
+      let cloudinaryErrorMessage = 'No se pudo subir la imagen a Cloudinary.'
+
+      try {
+        const errorPayload = await response.json()
+        cloudinaryErrorMessage = errorPayload?.error?.message || errorPayload?.message || cloudinaryErrorMessage
+      } catch {
+        // Si Cloudinary no devuelve JSON, mantenemos el mensaje por defecto.
+      }
+
+      throw new Error(cloudinaryErrorMessage)
+    }
+
+    const data = await response.json()
+    form.value.imageUrl = data.secure_url || data.url || ''
+    selectedImageFile.value = null
+    message.value = 'Imagen subida correctamente.'
+  } catch (error) {
+    errorMessage.value = error.message || 'Error al subir imagen a Cloudinary.'
+  } finally {
+    isUploadingImage.value = false
+  }
+}
+
+async function saveProduct() {
   clearFeedback()
   const validationError = validateForm()
 
@@ -101,41 +181,61 @@ function saveProduct() {
     return
   }
 
+  if (isUploadingImage.value) {
+    errorMessage.value = 'Espera a que termine la subida de la imagen.'
+    return
+  }
+
+  isSavingProduct.value = true
+
   const productData = {
-    name: form.value.name.trim(),
-    description: form.value.description.trim(),
+    name: (form.value.name || '').trim(),
+    description: (form.value.description || '').trim(),
+    imageUrl: (form.value.imageUrl || '').trim(),
     price: Number(form.value.price),
     stock: Number(form.value.stock)
   }
 
-  if (isEditing.value) {
-    products.value = products.value.map((product) => {
-      if (product.id !== editingId.value) return product
-      return { ...product, ...productData }
-    })
-    message.value = 'Producto actualizado correctamente.'
-  } else {
-    products.value.unshift({
-      id: crypto.randomUUID(),
-      ...productData
-    })
-    message.value = 'Producto añadido correctamente.'
-  }
+  try {
+    if (isEditing.value) {
+      const response = await http.put(`/catalog/products/${editingId.value}`, productData)
+      const updatedProduct = response.data
 
-  persistProducts()
-  closeModal()
+      products.value = products.value.map((product) => {
+        if (product.id !== editingId.value) return product
+        return updatedProduct
+      })
+      message.value = 'Producto actualizado correctamente.'
+    } else {
+      const response = await http.post('/catalog/products', productData)
+      const createdProduct = response.data
+      products.value.unshift(createdProduct)
+      message.value = 'Producto añadido correctamente.'
+    }
+
+    closeModal()
+  } catch (error) {
+    errorMessage.value = getErrorMessage(error, 'No se pudo guardar el producto.')
+  } finally {
+    isSavingProduct.value = false
+  }
 }
 
-function deleteProduct(productId) {
+async function deleteProduct(productId) {
   clearFeedback()
-  products.value = products.value.filter((product) => product.id !== productId)
-  persistProducts()
 
-  if (editingId.value === productId) {
-    closeModal()
+  try {
+    await http.delete(`/catalog/products/${productId}`)
+    products.value = products.value.filter((product) => product.id !== productId)
+
+    if (editingId.value === productId) {
+      closeModal()
+    }
+
+    message.value = 'Producto eliminado correctamente.'
+  } catch (error) {
+    errorMessage.value = getErrorMessage(error, 'No se pudo eliminar el producto.')
   }
-
-  message.value = 'Producto eliminado correctamente.'
 }
 
 function cancelEdit() {
@@ -159,12 +259,15 @@ function cancelEdit() {
         <div v-if="message" class="feedback success">{{ message }}</div>
         <div v-if="errorMessage" class="feedback error">{{ errorMessage }}</div>
 
-        <p v-if="products.length === 0" class="empty-state">No hay productos en el catálogo.</p>
+        <p v-if="isLoadingProducts" class="empty-state">Cargando productos...</p>
+
+        <p v-else-if="products.length === 0" class="empty-state">No hay productos en el catálogo.</p>
 
         <div v-else class="table-wrapper">
           <table>
             <thead>
               <tr>
+                <th>Imagen</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Precio</th>
@@ -174,6 +277,10 @@ function cancelEdit() {
             </thead>
             <tbody>
               <tr v-for="product in products" :key="product.id">
+                <td>
+                  <img v-if="product.imageUrl" :src="product.imageUrl" alt="Imagen producto" class="product-thumb" />
+                  <span v-else>-</span>
+                </td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.description || '-' }}</td>
                 <td>{{ product.price.toFixed(2) }} €</td>
@@ -203,6 +310,20 @@ function cancelEdit() {
               <textarea id="description" v-model="form.description" rows="3" />
             </div>
 
+            <div class="form-group">
+              <label for="imageFile">Subir imagen</label>
+              <div class="upload-row">
+                <input id="imageFile" type="file" accept="image/*" @change="onImageSelected" />
+                <span class="upload-status" :class="{ loading: isUploadingImage }">
+                  {{ isUploadingImage ? 'Subiendo...' : 'La imagen se sube automaticamente al seleccionarla' }}
+                </span>
+              </div>
+            </div>
+
+            <div v-if="form.imageUrl" class="preview-wrapper">
+              <img :src="form.imageUrl" alt="Preview" class="preview-image" />
+            </div>
+
             <div class="form-row">
               <div class="form-group">
                 <label for="price">Precio</label>
@@ -218,7 +339,9 @@ function cancelEdit() {
             <div v-if="errorMessage" class="feedback error">{{ errorMessage }}</div>
 
             <div class="actions">
-              <button type="submit">{{ isEditing ? 'Guardar cambios' : 'Añadir producto' }}</button>
+              <button type="submit" :disabled="isSavingProduct || isUploadingImage">
+                {{ isSavingProduct ? 'Guardando...' : isEditing ? 'Guardar cambios' : 'Añadir producto' }}
+              </button>
               <button type="button" class="secondary" @click="cancelEdit">Cancelar</button>
             </div>
           </form>
@@ -312,6 +435,35 @@ function cancelEdit() {
   box-sizing: border-box;
 }
 
+.upload-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.upload-status {
+  color: #4b5563;
+  font-size: 0.9rem;
+}
+
+.upload-status.loading {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.preview-wrapper {
+  margin-top: -0.25rem;
+}
+
+.preview-image {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+}
+
 .actions {
   display: flex;
   gap: 0.75rem;
@@ -325,6 +477,11 @@ button {
   background-color: #2f80ed;
   color: #ffffff;
   cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 button.secondary {
@@ -375,6 +532,14 @@ td {
 
 th {
   color: #374151;
+}
+
+.product-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #e5e7eb;
 }
 
 .action-buttons {
