@@ -12,6 +12,9 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: dresstyle-rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin123
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -50,6 +53,8 @@ services:
     container_name: dresstyle-auth
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/dresstyle_auth
+      - SPRING_RABBITMQ_USERNAME=admin
+      - SPRING_RABBITMQ_PASSWORD=admin123
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
       - JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
       - ADMIN_NAME=admin

@@ -5,7 +5,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -29,29 +28,11 @@ public class User {
 
     private Set<String> roles;
 
+    private String phone;
+
     private List<Address> addresses;
 
     // Campo para el servicio de fidelización
     private boolean activeSubscription;
-
-    @Data
-    class Address{
-
-        private String street;
-        private String city;
-        private String zipCode;
-        private String country;
-
-    }
-
-    @Data
-    class SubscriptionData{
-
-        private boolean isActive;
-        private LocalDate startDate;
-        private LocalDate endDate;
-
-    }
-
 
 }

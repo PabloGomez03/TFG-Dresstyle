@@ -48,10 +48,11 @@ defineProps({
     </div>
 
 
-      <input type="text" placeholder="Busca algun producto" class="search"/>
+      <input v-if="!isAdmin" type="text" placeholder="Busca algun producto" class="search"/>
 
     <nav class="nav">
       <template v-if="isAdmin">
+        <router-link to="/admin">Panel de Administrador</router-link>
         <button @click="logout" class="btn-logout">Cerrar Sesión</button>
       </template>
 

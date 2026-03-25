@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 const baseURL = "/api"
+const publicAuthPaths = ['/auth/login', '/auth/register']
 
 const http = axios.create({
   baseURL: baseURL,
@@ -11,9 +12,11 @@ const http = axios.create({
 
 // Interceptor para agregar token JWT y CSRF
 http.interceptors.request.use((config) => {
+  const requestUrl = config.url || ''
   const token = localStorage.getItem('token')
+  const isPublicAuthRequest = publicAuthPaths.some((path) => requestUrl.startsWith(path))
 
-  if (token && token !== 'undefined') {
+  if (!isPublicAuthRequest && token && token !== 'undefined') {
     config.headers.Authorization = `Bearer ${token}`
 }
 

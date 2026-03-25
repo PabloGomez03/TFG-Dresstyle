@@ -23,5 +23,6 @@ public class GatewayRoutesConfig {
                 .uri("lb://catalog-service"))
                 .build();
                 
+                
     }
 }

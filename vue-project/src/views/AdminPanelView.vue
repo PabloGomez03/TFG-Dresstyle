@@ -1,6 +1,5 @@
 <script setup>
 import HeaderItem from '@/components/HeaderItem.vue'
-import FooterItem from '@/components/FooterItem.vue'
 import http from '@/api/http'
 import { computed, onMounted, ref } from 'vue'
 
@@ -349,7 +348,7 @@ function cancelEdit() {
       </div>
     </main>
 
-    <FooterItem class="main-footer" />
+
 
   </div>
 </template>
@@ -528,6 +527,7 @@ td {
   padding: 0.7rem;
   border-bottom: 1px solid #e5e7eb;
   text-align: left;
+  vertical-align: middle;
 }
 
 th {
@@ -545,6 +545,7 @@ th {
 .action-buttons {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
 }
 
 .modal-overlay {

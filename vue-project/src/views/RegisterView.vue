@@ -12,16 +12,15 @@ var confirmEmail = ref('')
 var password = ref('')
 const showSuccessModal = ref(false)
 const isLoading = ref(false)
+const submitError = ref('')
+const showDuplicateEmailMsg = ref(false)
 
 function validateEmails() {
   let email = document.getElementById('email').value
   let confirmEmail = document.getElementById('confirm-email').value
   let errorMsg = document.getElementById('emailMismatchMsg')
-  let duplicateEmailMsg = document.getElementById('duplicateEmailMsg')
-
-  if (duplicateEmailMsg) {
-    duplicateEmailMsg.style.display = 'none'
-  }
+  submitError.value = ''
+  showDuplicateEmailMsg.value = false
 
   if (email !== confirmEmail) {
     errorMsg.style.display = 'block'
@@ -36,6 +35,8 @@ function validatePassword() {
 
   let password = document.getElementById('password').value
   let passwordError = document.getElementById('passwordErrorMsg')
+
+  submitError.value = ''
 
   if(password.length === 0) {
     passwordError.style.display = 'none'
@@ -57,6 +58,9 @@ function successfulRegister() {
 }
 
 const registerUser = async () => {
+  submitError.value = ''
+  showDuplicateEmailMsg.value = false
+
   if (isLoading.value) {
     return
   }
@@ -84,17 +88,22 @@ const registerUser = async () => {
         console.error("Data del error:", error.response.data);
         console.error("Status HTTP:", error.response.status);
 
-        if(error.response.status === 403) {
+        if(error.response.status === 409 || error.response.status === 403) {
+          showDuplicateEmailMsg.value = true
 
-          let dupMsg = document.getElementById('duplicateEmailMsg');
-          dupMsg.style.display = 'block';
+        } else if (error.response.status === 401) {
+          submitError.value = 'La sesion actual no es valida. Recarga la pagina e intentalo de nuevo.'
+        } else {
+          submitError.value = error.response.data?.message || 'No se pudo completar el registro.'
 
         }
 
     } else if (error.request) {
         console.error("No hay respuesta del servidor", error.request);
+        submitError.value = 'No hay respuesta del servidor.'
     } else {
         console.error("Error en Axios", error.message);
+        submitError.value = 'Se ha producido un error al registrar la cuenta.'
     }
   } finally {
     isLoading.value = false
@@ -132,7 +141,7 @@ const registerUser = async () => {
               placeholder="Ingresa tu correo electrónico"
               required
             />
-            <div id="duplicateEmailMsg" class="error-msg">
+            <div v-if="showDuplicateEmailMsg" id="duplicateEmailMsg" class="error-msg visible">
               <i class="dup-emails">Ya existe una cuenta con este correo electrónico en el sistema</i>
             </div>
           </div>
@@ -168,6 +177,10 @@ const registerUser = async () => {
 
           <div id="passwordErrorMsg" class="error-msg">
             <i class="weak-password">La contraseña debe tener al menos 8 caracteres</i>
+          </div>
+
+          <div v-if="submitError" class="error-msg visible">
+            <i>{{ submitError }}</i>
           </div>
 
           <button type="submit" :disabled="isLoading">Registrarse</button>
@@ -356,6 +369,10 @@ const registerUser = async () => {
   font-size: 0.75rem;
   display: none;
   margin-top: 0.25rem;
+}
+
+.error-msg.visible {
+  display: block;
 }
 
 @media (max-width: 600px) {

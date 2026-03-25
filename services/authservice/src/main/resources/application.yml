@@ -3,16 +3,12 @@ spring:
     name: auth-service
   mongodb:
     uri: ${SPRING_MONGODB_URI:mongodb://mongodb:27017/dresstyle_auth}
-  data:
-    mongodb:
-      # Usamos 'mongodb' porque es el nombre del servicio en el docker-compose
-      uri: ${SPRING_DATA_MONGODB_URI:mongodb://mongodb:27017/dresstyle_auth}
 
   rabbitmq:
     host: rabbitmq # Nombre del servicio definido en docker-compose
     port: 5672
-    username: guest
-    password: guest
+    username: ${SPRING_RABBITMQ_USERNAME:admin}
+    password: ${SPRING_RABBITMQ_PASSWORD:admin123}
 
 
 eureka:
