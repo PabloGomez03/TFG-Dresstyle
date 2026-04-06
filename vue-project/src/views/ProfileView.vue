@@ -232,7 +232,6 @@ onMounted(() => {
                 v-model="editFormData.lastName"
                 type="text"
                 placeholder="Ingresa tu apellido"
-                required
               />
             </div>
 
@@ -379,13 +378,16 @@ onMounted(() => {
 }
 
 .profile-card-editing {
-  max-width: 450px;
+  max-width: 1000px;
   background: white;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   backdrop-filter: none;
-  padding: 2.5rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 0;
 }
 
 .profile-header-title {
@@ -578,11 +580,17 @@ onMounted(() => {
   margin-top: 1rem;
 }
 
+.profile-edit {
+  display: contents;
+}
+
 .profile-card-editing .profile-header-title {
   justify-content: center;
   border-bottom: none;
   margin-bottom: 2rem;
   padding-bottom: 0;
+  grid-column: 1 / -1;
+  padding: 2.5rem 2.5rem 0 2.5rem;
 }
 
 .profile-card-editing .profile-header-title h1 {
@@ -593,12 +601,15 @@ onMounted(() => {
 
 .profile-card-editing .edit-form {
   display: block;
+  padding: 0 2.5rem 2.5rem 2.5rem;
+  grid-column: 1;
+  grid-row: 2;
 }
 
 .profile-card-editing .form-group {
-  max-width: 380px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
   margin-bottom: 1.5rem;
 }
 
@@ -621,16 +632,27 @@ onMounted(() => {
 .profile-card-editing .form-actions {
   width: 100%;
   box-sizing: border-box;
-  max-width: 380px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  grid-column: 1;
+  display: grid;
+  gap: 0.75rem;
 }
 
 .profile-card-editing .addresses-edit-section {
   width: 100%;
   box-sizing: border-box;
-  max-width: 380px;
-  margin: 0 auto 1rem;
+  max-width: none;
+  margin: 0;
+  padding: 2.5rem 1.5rem;
+  grid-column: 2;
+  grid-row: 1 / -1;
+  background: #f9f9f9;
+  border-left: 1px solid #e0e0e0;
+  border-radius: 0 12px 12px 0;
+  overflow-y: auto;
+  max-height: 600px;
 }
 
 .addresses-edit-header {
@@ -694,10 +716,11 @@ onMounted(() => {
 
 .profile-card-editing .btn-save {
   width: 100%;
-  margin-top: 1.5rem;
+  margin-top: 0;
   padding: 0.875rem;
   border-radius: 8px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  order: 1;
 }
 
 .profile-card-editing .btn-save:hover:not(:disabled) {
@@ -708,11 +731,12 @@ onMounted(() => {
 
 .profile-card-editing .btn-cancel {
   width: 100%;
-  margin-top: 0.75rem;
+  margin-top: 0;
   border: 1.5px solid #ddd;
   border-radius: 8px;
   background: white;
   color: #555;
+  order: 2;
 }
 
 .profile-card-editing .btn-cancel:hover {
@@ -726,7 +750,8 @@ onMounted(() => {
   }
 
   .profile-card-editing {
-    padding: 2rem;
+    padding: 1.5rem;
+    grid-template-columns: 1fr;
   }
 
   .profile-info,
@@ -738,11 +763,26 @@ onMounted(() => {
     flex-direction: column;
     gap: 1rem;
     align-items: flex-start;
+    padding: 1.5rem 1.5rem 0 1.5rem;
   }
 
   .btn-edit,
   .btn-cancel {
     width: 100%;
+  }
+
+  .profile-card-editing .addresses-edit-section {
+    grid-column: 1;
+    grid-row: auto;
+    border-left: none;
+    border-radius: 0;
+    border-top: 1px solid #e0e0e0;
+    max-height: none;
+    padding: 1.5rem;
+  }
+
+  .profile-card-editing .edit-form {
+    padding: 0 1.5rem 1.5rem 1.5rem;
   }
 }
 
