@@ -2,10 +2,14 @@
 import FooterItem from '@/components/FooterItem.vue'
 import HeaderItem from '@/components/HeaderItem.vue'
 import http from '@/api/http'
+import { useAuthStore } from '@/stores/auth'
+import { useCartStore } from '@/stores/cart'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const cartStore = useCartStore()
 var name = ref('')
 var email = ref('')
 var confirmEmail = ref('')
@@ -81,6 +85,20 @@ const registerUser = async () => {
       email: email.value,
       password: password.value,
     })
+
+    const loginResult = await authStore.login({
+      email: email.value,
+      password: password.value,
+    })
+
+    if (loginResult.success) {
+      cartStore.loadCartFromStorage().catch((error) => {
+        console.warn('No se pudo sincronizar el carrito tras el registro:', error)
+      })
+      router.push('/')
+      return
+    }
+
     successfulRegister()
   } catch (error) {
     if (error.response) {

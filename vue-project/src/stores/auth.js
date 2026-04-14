@@ -48,6 +48,12 @@ export const useAuthStore = defineStore('auth', {
     userRoles: (state) => normalizeRoles(state.user?.roles),
     isAdmin() {
       return this.isAuthenticated && hasAdminRole(this.userRoles);
+    },
+    isTokenValid() {
+      if (!this.token || this.token === 'undefined') {
+        return false;
+      }
+      return !isTokenExpired(this.token);
     }
   },
 
@@ -87,7 +93,7 @@ export const useAuthStore = defineStore('auth', {
       const token = localStorage.getItem('token');
 
       if (!token || token === 'undefined' || isTokenExpired(token)) {
-        this.logout();
+        this.logout(false);
         return;
       }
 
@@ -101,19 +107,16 @@ export const useAuthStore = defineStore('auth', {
       this.isAuthenticated = true;
     },
 
-    isTokenValid() {
-      if (!this.token || this.token === 'undefined') {
-        return false;
-      }
-
-      return !isTokenExpired(this.token);
-    },
-
-    logout() {
+    logout(clearGuestCart = true) {
       this.token = null;
       this.user = null;
       this.isAuthenticated = false;
       localStorage.removeItem('token');
+
+      if (clearGuestCart && typeof window !== 'undefined') {
+        window.sessionStorage.removeItem('cart');
+        window.localStorage.removeItem('cart');
+      }
     }
   }
 });

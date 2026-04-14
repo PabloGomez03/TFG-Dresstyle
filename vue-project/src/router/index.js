@@ -4,9 +4,9 @@ import LoginView from '../views/LoginView.vue'
 import HomeView from '../views/HomeView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import CartView from '@/views/CartView.vue'
-import CheckoutView from '@/views/CheckoutView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import AdminPanelView from '@/views/AdminPanelView.vue'
+import SearchView from '@/views/SearchView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,13 +35,6 @@ const router = createRouter({
 
     },
     {
-      path: '/checkout',
-      name: 'checkout',
-      component: CheckoutView,
-      meta: { requiresAuth: true }
-
-    },
-    {
       path: '/profile',
       name: 'profile',
       component: ProfileView,
@@ -54,10 +47,17 @@ const router = createRouter({
       component: AdminPanelView,
       meta: { requiresAuth: true, requiresAdmin: true }
 
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: SearchView
+    },
+    {
+      path: '/catalog',
+      name: 'catalog',
+      component: SearchView
     }
-
-
-    // Add more routes here later
   ]
 })
 
@@ -65,7 +65,7 @@ router.beforeEach((to) => {
   const authStore = useAuthStore()
   authStore.initializeAuth()
 
-  const isLoggedIn = authStore.isAuthenticated && authStore.isTokenValid()
+  const isLoggedIn = authStore.isAuthenticated && authStore.isTokenValid
   const isAdmin = authStore.isAdmin
 
   if (to.meta.requiresAuth && !isLoggedIn) {
@@ -73,10 +73,6 @@ router.beforeEach((to) => {
   }
 
   if (to.meta.requiresAdmin && !isAdmin) {
-    return { path: '/' }
-  }
-
-  if ((to.path === '/auth/login' || to.path === '/auth/register') && isLoggedIn) {
     return { path: '/' }
   }
 

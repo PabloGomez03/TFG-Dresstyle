@@ -6,7 +6,6 @@
   font-style: normal;
 }
 
-
 html,body {
   font-family: 'TFG-Dresstyle-Font', sans-serif;
   background: url('@/img/background2.jpg');
@@ -20,6 +19,12 @@ html,body {
   overflow-x: hidden;
 
 }
+
+#app {
+  min-height: 100vh;
+  background: transparent;
+}
+
 footer, header {
   font-family: 'TFG-Dresstyle-Font', sans-serif;
 }

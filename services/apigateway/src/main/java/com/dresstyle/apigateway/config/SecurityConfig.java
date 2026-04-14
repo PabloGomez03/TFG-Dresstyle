@@ -62,6 +62,7 @@ public class SecurityConfig {
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())) //Acitva autorizacion con JWT
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(HttpMethod.OPTIONS).permitAll() // Permitir Preflights
+                .pathMatchers(HttpMethod.GET, "/api/catalog/**").permitAll()
                     .pathMatchers("/api/auth/**", "/error").permitAll()
                         .anyExchange().authenticated()
                 )

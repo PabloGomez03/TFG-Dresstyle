@@ -21,6 +21,11 @@ public class GatewayRoutesConfig {
                 .path("/api/catalog/**")
                 .filters(f -> f.stripPrefix(1))
                 .uri("lb://catalog-service"))
+                .route("orderservice-api",
+                r -> r
+                .path("/api/orders/**")
+                .filters(f -> f.stripPrefix(1))
+                .uri("lb://orderservice"))
                 .build();
                 
                 

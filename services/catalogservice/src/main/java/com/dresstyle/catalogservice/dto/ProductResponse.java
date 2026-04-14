@@ -13,6 +13,7 @@ public class ProductResponse {
     String imageUrl;
     double price;
     int stock;
+    String category;
 
     public static ProductResponse from(Product product) {
         return ProductResponse.builder()
@@ -22,6 +23,7 @@ public class ProductResponse {
                 .imageUrl(product.getImageUrl())
                 .price(product.getPrice())
                 .stock(product.getStock())
+                .category(product.getCategory())
                 .build();
     }
 }

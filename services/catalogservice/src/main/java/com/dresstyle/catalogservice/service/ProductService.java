@@ -43,6 +43,7 @@ public class ProductService {
                 .imageUrl(trimToNull(request.getImageUrl()))
                 .price(request.getPrice())
                 .stock(request.getStock())
+            .category(trimToNull(request.getCategory()))
                 .build();
 
         Product savedProduct = productRepository.save(product);
@@ -63,6 +64,7 @@ public class ProductService {
         existingProduct.setImageUrl(trimToNull(request.getImageUrl()));
         existingProduct.setPrice(request.getPrice());
         existingProduct.setStock(request.getStock());
+        existingProduct.setCategory(trimToNull(request.getCategory()));
 
         Product savedProduct = productRepository.save(existingProduct);
         return ProductResponse.from(savedProduct);

@@ -20,4 +20,7 @@ public class ProductRequest {
 
     @Min(value = 0, message = "El stock debe ser mayor o igual a 0")
     private int stock;
+
+    @NotBlank(message = "La categoría del producto es obligatoria")
+    private String category;
 }

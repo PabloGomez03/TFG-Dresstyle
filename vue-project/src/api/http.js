@@ -18,7 +18,7 @@ http.interceptors.request.use((config) => {
 
   if (!isPublicAuthRequest && token && token !== 'undefined') {
     config.headers.Authorization = `Bearer ${token}`
-}
+  }
 
 
   const csrfToken = getCookie('XSRF-TOKEN')

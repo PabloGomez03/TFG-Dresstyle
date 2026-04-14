@@ -359,17 +359,24 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .profile-main {
   flex: 1;
-  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem clamp(1rem, 3vw, 2rem);
   background: transparent;
 }
 
 .profile-card {
+  width: 100%;
   max-width: 600px;
   margin: 0 auto;
+  box-sizing: border-box;
   background: rgba(255, 255, 255, 0.92);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -378,16 +385,17 @@ onMounted(() => {
 }
 
 .profile-card-editing {
+  width: min(100%, 1000px);
   max-width: 1000px;
+  margin: 0 auto;
+  box-sizing: border-box;
   background: white;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   backdrop-filter: none;
   padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 0;
+  display: block;
 }
 
 .profile-header-title {
@@ -602,8 +610,6 @@ onMounted(() => {
 .profile-card-editing .edit-form {
   display: block;
   padding: 0 2.5rem 2.5rem 2.5rem;
-  grid-column: 1;
-  grid-row: 2;
 }
 
 .profile-card-editing .form-group {
@@ -644,15 +650,13 @@ onMounted(() => {
   width: 100%;
   box-sizing: border-box;
   max-width: none;
-  margin: 0;
-  padding: 2.5rem 1.5rem;
-  grid-column: 2;
-  grid-row: 1 / -1;
+  margin-top: 1.25rem;
+  padding: 1.5rem;
   background: #f9f9f9;
-  border-left: 1px solid #e0e0e0;
-  border-radius: 0 12px 12px 0;
-  overflow-y: auto;
-  max-height: 600px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  overflow: visible;
+  max-height: none;
 }
 
 .addresses-edit-header {
@@ -772,11 +776,8 @@ onMounted(() => {
   }
 
   .profile-card-editing .addresses-edit-section {
-    grid-column: 1;
-    grid-row: auto;
-    border-left: none;
-    border-radius: 0;
-    border-top: 1px solid #e0e0e0;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
     max-height: none;
     padding: 1.5rem;
   }

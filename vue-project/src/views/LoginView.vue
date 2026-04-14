@@ -2,10 +2,12 @@
 import HeaderItem from '@/components/HeaderItem.vue'
 import FooterItem from '@/components/FooterItem.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useCartStore } from '@/stores/cart'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 
 const authStore = useAuthStore()
+const cartStore = useCartStore()
 const router = useRouter()
 
 const email = ref('')
@@ -21,13 +23,13 @@ const handleLogin = async () => {
   })
 
   if (result.success) {
+    cartStore.loadCartFromStorage().catch((error) => {
+      console.warn('No se pudo sincronizar el carrito al iniciar sesión:', error)
+    })
+
     if (result.isAdmin) {
-
       router.push('/admin')
-
-    }
-    else{
-
+    } else {
       router.push('/')
     }
 

@@ -1,6 +1,14 @@
 <script setup>
+import { useRouter } from 'vue-router'
 import HeaderItem from '@/components/HeaderItem.vue'
 import FooterItem from '@/components/FooterItem.vue'
+
+const router = useRouter()
+
+const openCatalog = () => {
+  const { href } = router.resolve({ name: 'catalog' })
+  window.open(href, '_blank', 'noopener')
+}
 </script>
 
 <template>
@@ -35,7 +43,7 @@ import FooterItem from '@/components/FooterItem.vue'
 
     <div class="cta-section">
       <h2>Explora Nuestras Colecciones</h2>
-      <router-link to="/catalog"><button class="cta-button">Ver Catálogo</button></router-link>
+      <button class="cta-button" @click="openCatalog">Ver Catálogo</button>
     </div>
 
   </div>

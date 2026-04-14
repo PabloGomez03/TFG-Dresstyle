@@ -2,6 +2,7 @@
 import HeaderItem from '@/components/HeaderItem.vue'
 import http from '@/api/http'
 import { computed, onMounted, ref } from 'vue'
+import { getCategoriesList } from '@/utils/categorySizes'
 
 const CLOUDINARY_CLOUD_NAME = (import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '').trim()
 const CLOUDINARY_UPLOAD_PRESET = (import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || '').trim()
@@ -21,7 +22,8 @@ const form = ref({
   description: '',
   imageUrl: '',
   price: '',
-  stock: ''
+  stock: '',
+  category: ''
 })
 
 const isEditing = computed(() => editingId.value !== null)
@@ -55,7 +57,8 @@ function resetForm() {
     description: '',
     imageUrl: '',
     price: '',
-    stock: ''
+    stock: '',
+    category: ''
   }
   selectedImageFile.value = null
   isUploadingImage.value = false
@@ -76,7 +79,8 @@ function openEditModal(product) {
     description: product.description || '',
     imageUrl: product.imageUrl || '',
     price: String(product.price ?? ''),
-    stock: String(product.stock ?? '')
+    stock: String(product.stock ?? ''),
+    category: product.category || ''
   }
   isModalOpen.value = true
 }
@@ -94,6 +98,10 @@ function clearFeedback() {
 function validateForm() {
   if (!form.value.name.trim()) {
     return 'El nombre del producto es obligatorio.'
+  }
+
+  if (!form.value.category.trim()) {
+    return 'La categoría del producto es obligatoria.'
   }
 
   if (!form.value.imageUrl.trim()) {
@@ -192,7 +200,8 @@ async function saveProduct() {
     description: (form.value.description || '').trim(),
     imageUrl: (form.value.imageUrl || '').trim(),
     price: Number(form.value.price),
-    stock: Number(form.value.stock)
+    stock: Number(form.value.stock),
+    category: (form.value.category || '').trim()
   }
 
   try {
@@ -269,6 +278,7 @@ function cancelEdit() {
                 <th>Imagen</th>
                 <th>Nombre</th>
                 <th>Descripción</th>
+                <th>Categoría</th>
                 <th>Precio</th>
                 <th>Stock</th>
                 <th>Acciones</th>
@@ -282,6 +292,7 @@ function cancelEdit() {
                 </td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.description || '-' }}</td>
+                <td>{{ product.category || '-' }}</td>
                 <td>{{ product.price.toFixed(2) }} €</td>
                 <td>{{ product.stock }}</td>
                 <td class="action-buttons">
@@ -321,6 +332,16 @@ function cancelEdit() {
 
             <div v-if="form.imageUrl" class="preview-wrapper">
               <img :src="form.imageUrl" alt="Preview" class="preview-image" />
+            </div>
+
+            <div class="form-group">
+              <label for="category">Categoría</label>
+              <select id="category" v-model="form.category" required>
+                <option value="">Selecciona una categoría</option>
+                <option v-for="cat in getCategoriesList()" :key="cat" :value="cat">
+                  {{ cat }}
+                </option>
+              </select>
             </div>
 
             <div class="form-row">
