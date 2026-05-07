@@ -1,11 +1,9 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth';
-import { useCartStore } from '@/stores/cart';
 import { useRouter } from 'vue-router';
 import { computed, ref } from 'vue';
 
 const authStore = useAuthStore();
-const cartStore = useCartStore();
 const router = useRouter();
 const searchQuery = ref('');
 
@@ -27,14 +25,13 @@ const isUser = computed(() => {
 });
 
 const logout = () => {
-  authStore.logout();
-  cartStore.loadCartFromStorage();
+  authStore.logout(false);
   router.push('/');
 };
 
 const handleSearch = () => {
   if (searchQuery.value.trim()) {
-    router.push({ name: 'search', query: { q: searchQuery.value } });
+    router.push({ name: 'search', query: { q: searchQuery.value.trim(), page: 0 } });
     searchQuery.value = '';
   }
 };
@@ -66,7 +63,7 @@ defineProps({
       <input
         v-model="searchQuery"
         type="text"
-        placeholder="Busca algun producto"
+        placeholder="Busca por nombre, categoria o característica"
         class="search"
         @keyup.enter="handleSearch"
       />

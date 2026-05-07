@@ -2,10 +2,15 @@ package com.dresstyle.catalogservice.service;
 
 import com.dresstyle.catalogservice.dto.ProductRequest;
 import com.dresstyle.catalogservice.dto.ProductResponse;
+import com.dresstyle.catalogservice.dto.PagedProductResponse;
 import com.dresstyle.catalogservice.exception.ProductNotFoundException;
 import com.dresstyle.catalogservice.model.Product;
 import com.dresstyle.catalogservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +19,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductService {
 
+    private static final int DEFAULT_PAGE_SIZE = 12;
+    private static final int MAX_PAGE_SIZE = 100;
+
     private final ProductRepository productRepository;
 
     public List<ProductResponse> findAll() {
@@ -21,6 +29,35 @@ public class ProductService {
                 .stream()
                 .map(ProductResponse::from)
                 .toList();
+    }
+
+    public PagedProductResponse searchProducts(String query, Integer page, Integer size) {
+        int pageNum = page == null || page < 0 ? 0 : page;
+        int pageSize = size == null ? DEFAULT_PAGE_SIZE : Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+        
+        Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by(Sort.Direction.ASC, "name"));
+
+        Page<Product> productPage;
+        if (query == null || query.trim().isEmpty()) {
+            productPage = productRepository.findAll(pageable);
+        } else {
+            productPage = productRepository.searchByTerm(query.trim(), pageable);
+        }
+
+        List<ProductResponse> content = productPage.getContent()
+                .stream()
+                .map(ProductResponse::from)
+                .toList();
+
+        return PagedProductResponse.builder()
+                .content(content)
+                .totalElements((int) productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .currentPage(pageNum)
+                .pageSize(pageSize)
+                .hasNext(productPage.hasNext())
+                .hasPrevious(productPage.hasPrevious())
+                .build();
     }
 
     public ProductResponse findById(String id) {

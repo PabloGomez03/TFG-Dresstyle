@@ -2,6 +2,7 @@ package com.dresstyle.catalogservice.controller;
 
 import com.dresstyle.catalogservice.dto.ProductRequest;
 import com.dresstyle.catalogservice.dto.ProductResponse;
+import com.dresstyle.catalogservice.dto.PagedProductResponse;
 import com.dresstyle.catalogservice.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,12 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public List<ProductResponse> getProducts() {
-        return productService.findAll();
+    public PagedProductResponse getProducts(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "12") Integer size
+    ) {
+        return productService.searchProducts(q, page, size);
     }
 
     @GetMapping("/{id}")

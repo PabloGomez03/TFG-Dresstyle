@@ -62,7 +62,7 @@ onMounted(() => {
               <div class="item-info">
                 <h3>{{ item.name }}</h3>
                 <p v-if="item.size" class="item-size">Talla: {{ item.size }}</p>
-                <p class="item-price">${{ parseFloat(item.price).toFixed(2) }}</p>
+                <p class="item-price">€{{ parseFloat(item.price).toFixed(2) }}</p>
               </div>
 
               <div class="item-quantity">
@@ -88,7 +88,7 @@ onMounted(() => {
               </div>
 
               <div class="item-total">
-                <p>${{ (item.price * item.quantity).toFixed(2) }}</p>
+                <p>€{{ (item.price * item.quantity).toFixed(2) }}</p>
               </div>
 
               <button
@@ -104,15 +104,15 @@ onMounted(() => {
             <h2>Resumen del Pedido</h2>
             <div class="summary-row">
               <span>Subtotal:</span>
-              <span>${{ cartStore.cartTotal.toFixed(2) }}</span>
+              <span>€{{ cartStore.cartSubtotal.toFixed(2) }}</span>
             </div>
             <div class="summary-row">
               <span>Envío:</span>
-              <span>$0.00</span>
+              <span>€{{ cartStore.cartShippingCost.toFixed(2) }}</span>
             </div>
             <div class="summary-row total">
               <span>Total:</span>
-              <span>${{ cartStore.cartTotal.toFixed(2) }}</span>
+              <span>€{{ cartStore.cartTotal.toFixed(2) }}</span>
             </div>
             <button @click="goHome" class="btn-continue-shopping">
               Continuar Comprando

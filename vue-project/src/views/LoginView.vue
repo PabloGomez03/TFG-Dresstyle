@@ -23,15 +23,19 @@ const handleLogin = async () => {
   })
 
   if (result.success) {
+    const targetRouteName = result.isAdmin ? 'admin-panel' : 'home'
+    await router.replace({ name: targetRouteName })
+
+    // Fallback de seguridad: si por alguna razón no cambia la ruta, forzamos navegación.
+    if (router.currentRoute.value.name === 'login') {
+      const { href } = router.resolve({ name: targetRouteName })
+      window.location.assign(href)
+      return
+    }
+
     cartStore.loadCartFromStorage().catch((error) => {
       console.warn('No se pudo sincronizar el carrito al iniciar sesión:', error)
     })
-
-    if (result.isAdmin) {
-      router.push('/admin')
-    } else {
-      router.push('/')
-    }
 
   } else {
 

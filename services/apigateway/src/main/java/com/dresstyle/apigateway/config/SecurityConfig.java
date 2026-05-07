@@ -57,13 +57,13 @@ public class SecurityConfig {
     public SecurityWebFilterChain apiSecurityFilterChain(ServerHttpSecurity http) {
         return http
                 .securityMatcher(new PathPatternParserServerWebExchangeMatcher("/api/**"))
-                .csrf(ServerHttpSecurity.CsrfSpec::disable) // Desactiva CSRF
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Aplica el CORS de abajo
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults())) //Acitva autorizacion con JWT
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers(HttpMethod.OPTIONS).permitAll() // Permitir Preflights
-                .pathMatchers(HttpMethod.GET, "/api/catalog/**").permitAll()
-                    .pathMatchers("/api/auth/**", "/error").permitAll()
+                        .pathMatchers(HttpMethod.OPTIONS).permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/catalog/products").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/catalog/**").permitAll()
                         .anyExchange().authenticated()
                 )
                 .build();

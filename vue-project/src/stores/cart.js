@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
 import http from '@/api/http';
+import { calculateShippingCost, calculateSubtotal, calculateTotal } from '@/utils/shipping';
 
 const CART_STORAGE_KEY = 'cart';
+const USER_CART_BACKUP_PREFIX = 'cart_user_';
 
 function getCartStorage() {
   return typeof window !== 'undefined' ? window.sessionStorage : null;
@@ -10,6 +12,61 @@ function getCartStorage() {
 
 function getLegacyCartStorage() {
   return typeof window !== 'undefined' ? window.localStorage : null;
+}
+
+function getUserCartBackupKey() {
+  const authStore = useAuthStore();
+  const email = authStore.user?.email;
+
+  if (!email || typeof email !== 'string') {
+    return null;
+  }
+
+  return `${USER_CART_BACKUP_PREFIX}${email.trim().toLowerCase()}`;
+}
+
+function readUserCartBackup() {
+  const backupStorage = getLegacyCartStorage();
+  const backupKey = getUserCartBackupKey();
+
+  if (!backupStorage || !backupKey) {
+    return [];
+  }
+
+  const rawBackup = backupStorage.getItem(backupKey);
+  if (!rawBackup) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(rawBackup);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    backupStorage.removeItem(backupKey);
+    return [];
+  }
+}
+
+function saveUserCartBackup(items) {
+  const backupStorage = getLegacyCartStorage();
+  const backupKey = getUserCartBackupKey();
+
+  if (!backupStorage || !backupKey) {
+    return;
+  }
+
+  backupStorage.setItem(backupKey, JSON.stringify(items));
+}
+
+function removeUserCartBackup() {
+  const backupStorage = getLegacyCartStorage();
+  const backupKey = getUserCartBackupKey();
+
+  if (!backupStorage || !backupKey) {
+    return;
+  }
+
+  backupStorage.removeItem(backupKey);
 }
 
 function saveCart(items) {
@@ -119,9 +176,9 @@ export const useCartStore = defineStore('cart', {
 
   getters: {
     cartItemsCount: (state) => state.items.length,
-    cartTotal: (state) => {
-      return state.items.reduce((total, item) => total + (item.price * item.quantity), 0);
-    }
+    cartSubtotal: (state) => calculateSubtotal(state.items),
+    cartShippingCost: (state) => calculateShippingCost(calculateSubtotal(state.items)),
+    cartTotal: (state) => calculateTotal(state.items)
   },
 
   actions: {
@@ -165,6 +222,7 @@ export const useCartStore = defineStore('cart', {
       this.items = [];
       if (isLoggedInUser()) {
         await http.delete('/orders/cart');
+        removeUserCartBackup();
         return;
       }
 
@@ -175,8 +233,10 @@ export const useCartStore = defineStore('cart', {
       if (isLoggedInUser()) {
         try {
           await saveRemoteCart(this.items);
+          saveUserCartBackup(this.items.map(normalizeItem));
         } catch (error) {
           console.error('Error guardando el carrito remoto:', error);
+          saveUserCartBackup(this.items.map(normalizeItem));
         }
         return;
       }
@@ -187,18 +247,41 @@ export const useCartStore = defineStore('cart', {
     async loadCartFromStorage() {
       if (isLoggedInUser()) {
         const guestItems = readGuestCartOnly();
+        const userBackupItems = readUserCartBackup().map(normalizeItem);
 
         try {
           const remoteItems = await loadRemoteCart();
-          this.items = guestItems.length ? mergeItems(remoteItems, guestItems) : remoteItems;
+          let nextItems = guestItems.length ? mergeItems(remoteItems, guestItems) : remoteItems;
+
+          // Recupera respaldo por usuario si el backend devuelve vacío.
+          if (!nextItems.length && userBackupItems.length) {
+            nextItems = userBackupItems;
+          }
+
+          this.items = nextItems;
+
+          if (guestItems.length || (!remoteItems.length && userBackupItems.length)) {
+            await saveRemoteCart(this.items);
+          }
 
           if (guestItems.length) {
-            await saveRemoteCart(this.items);
             removeCart();
           }
+
+          saveUserCartBackup(this.items.map(normalizeItem));
           return;
         } catch (error) {
           console.error('Error cargando el carrito remoto:', error);
+
+          // Fallback si el backend falla: intentamos preservar lo local y el respaldo por usuario.
+          if (guestItems.length) {
+            this.items = guestItems.map(normalizeItem);
+          } else {
+            this.items = userBackupItems;
+          }
+
+          saveUserCartBackup(this.items.map(normalizeItem));
+          return;
         }
       }
 

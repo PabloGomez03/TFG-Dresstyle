@@ -6,8 +6,7 @@ import FooterItem from '@/components/FooterItem.vue'
 const router = useRouter()
 
 const openCatalog = () => {
-  const { href } = router.resolve({ name: 'catalog' })
-  window.open(href, '_blank', 'noopener')
+  router.push({ name: 'catalog' })
 }
 </script>
 

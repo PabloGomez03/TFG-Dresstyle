@@ -107,7 +107,7 @@ export const useAuthStore = defineStore('auth', {
       this.isAuthenticated = true;
     },
 
-    logout(clearGuestCart = true) {
+    logout(clearGuestCart = false) {
       this.token = null;
       this.user = null;
       this.isAuthenticated = false;

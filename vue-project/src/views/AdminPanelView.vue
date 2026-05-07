@@ -14,8 +14,17 @@ const selectedImageFile = ref(null)
 const isUploadingImage = ref(false)
 const isLoadingProducts = ref(false)
 const isSavingProduct = ref(false)
+const isDeleteModalOpen = ref(false)
+const productToDelete = ref(null)
 const message = ref('')
 const errorMessage = ref('')
+const searchQuery = ref('')
+const currentPage = ref(0)
+const itemsPerPage = 12
+const totalItems = ref(0)
+const totalPages = ref(0)
+const isSearching = ref(false)
+let searchDebounceTimer = null
 
 const form = ref({
   name: '',
@@ -28,6 +37,7 @@ const form = ref({
 
 const isEditing = computed(() => editingId.value !== null)
 
+
 onMounted(() => {
   fetchProducts()
 })
@@ -39,15 +49,38 @@ function getErrorMessage(error, fallbackMessage) {
 async function fetchProducts() {
   clearFeedback()
   isLoadingProducts.value = true
+  isSearching.value = true
 
   try {
-    const response = await http.get('/catalog/products')
-    products.value = Array.isArray(response.data) ? response.data : []
+    const params = {
+      page: currentPage.value,
+      size: itemsPerPage
+    }
+
+    if (searchQuery.value.trim()) {
+      params.q = searchQuery.value.trim()
+    }
+
+    const response = await http.get('/catalog/products', { params })
+    const { content, totalElements, totalPages: pages } = response.data
+
+    products.value = Array.isArray(content) ? content : []
+    totalItems.value = totalElements || 0
+    totalPages.value = pages || 0
   } catch (error) {
+
+    if (error?.response?.status === 401) {
+      window.location.href = '/ds/auth/login?redirect=/admin'
+      return
+    }
+
     products.value = []
+    totalItems.value = 0
+    totalPages.value = 0
     errorMessage.value = getErrorMessage(error, 'No se pudieron cargar los productos.')
   } finally {
     isLoadingProducts.value = false
+    isSearching.value = false
   }
 }
 
@@ -246,8 +279,59 @@ async function deleteProduct(productId) {
   }
 }
 
+function confirmDeleteProduct(product) {
+  productToDelete.value = product
+  isDeleteModalOpen.value = true
+}
+
+function closeDeleteModal() {
+  isDeleteModalOpen.value = false
+  productToDelete.value = null
+}
+
+function executeDeleteProduct() {
+  if (!productToDelete.value?.id) {
+    closeDeleteModal()
+    return
+  }
+
+  const productId = productToDelete.value.id
+  closeDeleteModal()
+  deleteProduct(productId)
+}
+
 function cancelEdit() {
   closeModal()
+}
+
+function onSearchInput() {
+  currentPage.value = 0
+
+  // Clear any existing debounce timer
+  if (searchDebounceTimer) {
+    clearTimeout(searchDebounceTimer)
+  }
+
+  // Set a new debounce timer to avoid too many requests while typing
+  searchDebounceTimer = setTimeout(() => {
+    fetchProducts()
+    searchDebounceTimer = null
+  }, 500) // Wait 500ms after user stops typing before searching
+}
+
+
+function goToNextPage() {
+  if (currentPage.value < totalPages.value - 1) {
+    currentPage.value++
+    fetchProducts()
+  }
+}
+
+function goToPreviousPage() {
+  if (currentPage.value > 0) {
+    currentPage.value--
+    fetchProducts()
+  }
 }
 </script>
 
@@ -267,9 +351,24 @@ function cancelEdit() {
         <div v-if="message" class="feedback success">{{ message }}</div>
         <div v-if="errorMessage" class="feedback error">{{ errorMessage }}</div>
 
-        <p v-if="isLoadingProducts" class="empty-state">Cargando productos...</p>
+        <div class="search-bar">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Buscar por nombre, descripción o categoría..."
+            @input="onSearchInput"
+            class="search-input"
+          />
+          <span v-if="searchQuery" class="search-results">
+            {{ isSearching ? 'Buscando...' : totalItems + ' resultado' + (totalItems !== 1 ? 's' : '') }}
+          </span>
+        </div>
 
-        <p v-else-if="products.length === 0" class="empty-state">No hay productos en el catálogo.</p>
+        <p v-if="isLoadingProducts || isSearching" class="empty-state">Cargando productos...</p>
+
+        <p v-else-if="products.length === 0" class="empty-state">
+          {{ totalItems === 0 ? 'No hay productos en el catálogo.' : 'No se encontraron productos que coincidan con tu búsqueda.' }}
+        </p>
 
         <div v-else class="table-wrapper">
           <table>
@@ -297,11 +396,36 @@ function cancelEdit() {
                 <td>{{ product.stock }}</td>
                 <td class="action-buttons">
                   <button type="button" class="secondary" @click="openEditModal(product)">Modificar</button>
-                  <button type="button" class="danger" @click="deleteProduct(product.id)">Eliminar</button>
+                  <button type="button" class="danger" @click="confirmDeleteProduct(product)">Eliminar</button>
                 </td>
               </tr>
             </tbody>
           </table>
+
+          <div class="pagination">
+            <button
+              type="button"
+              class="pagination-btn"
+              @click="goToPreviousPage"
+              :disabled="currentPage === 0 || isSearching"
+            >
+              ← Anterior
+            </button>
+
+            <div class="pagination-info">
+              <span>Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+              <span class="items-count">{{ totalItems }} producto{{ totalItems !== 1 ? 's' : '' }}</span>
+            </div>
+
+            <button
+              type="button"
+              class="pagination-btn"
+              @click="goToNextPage"
+              :disabled="currentPage === totalPages - 1 || isSearching || totalPages === 0"
+            >
+              Siguiente →
+            </button>
+          </div>
         </div>
       </section>
 
@@ -367,6 +491,22 @@ function cancelEdit() {
           </form>
         </div>
       </div>
+
+      <div v-if="isDeleteModalOpen" class="modal-overlay delete-overlay" @click.self="closeDeleteModal">
+        <div class="modal delete-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+          <div class="delete-badge" aria-hidden="true">!</div>
+          <h2 id="delete-modal-title">Eliminación de producto</h2>
+          <p class="delete-message">
+            ¿Seguro que quieres eliminar <strong>{{ (productToDelete && productToDelete.name) || 'este producto' }}</strong>?
+          </p>
+          <p class="delete-warning">Esta acción no se puede deshacer.</p>
+
+          <div class="actions delete-actions">
+            <button type="button" class="danger" @click="executeDeleteProduct">Confirmar</button>
+            <button type="button" class="secondary" @click="closeDeleteModal">Cancelar</button>
+          </div>
+        </div>
+      </div>
     </main>
 
 
@@ -422,6 +562,37 @@ function cancelEdit() {
   align-items: center;
   margin-bottom: 1rem;
   gap: 1rem;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 250px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #2f80ed;
+  box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.1);
+}
+
+.search-results {
+  color: #6b7280;
+  font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .admin-form {
@@ -569,6 +740,52 @@ th {
   align-items: center;
 }
 
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  padding: 0.55rem 1rem;
+  background-color: #2f80ed;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #1e6bc8;
+}
+
+.pagination-btn:disabled {
+  background-color: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  display: flex;
+  gap: 1rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.items-count {
+  color: #2f80ed;
+  font-weight: 600;
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -588,15 +805,106 @@ th {
   padding: 1.5rem;
 }
 
+.delete-overlay {
+  backdrop-filter: blur(4px);
+}
+
+.delete-modal {
+  max-width: 460px;
+  text-align: center;
+  border: 1px solid rgba(220, 38, 38, 0.12);
+  box-shadow: 0 24px 60px rgba(17, 24, 39, 0.24);
+}
+
+/* Force readable text colors inside the delete modal (overrides .content p white) */
+.delete-modal {
+  color: #111827; /* base text color */
+}
+
+.delete-modal p {
+  color: #374151;
+}
+
+.delete-modal .delete-warning {
+  color: #b91c1c;
+}
+
+.delete-badge {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 0.9rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
 .modal h2 {
   margin-top: 0;
   margin-bottom: 1rem;
   color: #2b2b2b;
 }
 
+.delete-message {
+  margin: 0;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.delete-warning {
+  margin: 0.75rem 0 0;
+  color: #b91c1c;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.delete-actions {
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.delete-actions .danger {
+  background-color: #dc2626;
+}
+
+.delete-actions .secondary {
+  background-color: #6b7280;
+}
+
 @media (max-width: 780px) {
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .search-input {
+    min-width: 100%;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .section-header button {
+    width: 100%;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .pagination-btn {
+    width: 100%;
+  }
+
+  .pagination-info {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
   }
 
   .content {

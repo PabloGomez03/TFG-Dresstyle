@@ -17,4 +17,7 @@ public class CartResponse {
     private String userKey;
     private List<CartItem> items;
     private Instant updatedAt;
+    private double subtotal;
+    private double shippingCost;
+    private double total;
 }
