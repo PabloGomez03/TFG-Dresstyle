@@ -1,0 +1,30 @@
+spring:
+
+  mongodb:
+        uri: mongodb://mongo:27017/dresstyle_subscription
+        auto-index-creation: true
+
+  application:
+    name: subscriptionservice
+  
+
+server:
+  port: 8087
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-server:8761/eureka
+  instance:
+    hostname: subscriptionservice
+
+app:
+  jwt:
+    # Prefer setting via environment variable APP_JWT_SECRET for production
+    secret: ${APP_JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+    expiration: 86400000
+
+logging:
+  level:
+    root: INFO
+    com.dresstyle: DEBUG
