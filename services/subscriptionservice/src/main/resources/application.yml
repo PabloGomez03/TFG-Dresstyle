@@ -1,12 +1,10 @@
 spring:
-
   mongodb:
-        uri: mongodb://mongo:27017/dresstyle_subscription
-        auto-index-creation: true
+    uri: mongodb://mongodb:27017/dresstyle_subscription
+    auto-index-creation: true
 
   application:
-    name: subscriptionservice
-  
+    name: subscription-service
 
 server:
   port: 8087
@@ -16,7 +14,7 @@ eureka:
     service-url:
       defaultZone: http://discovery-server:8761/eureka
   instance:
-    hostname: subscriptionservice
+    hostname: subscription-service
 
 app:
   jwt:

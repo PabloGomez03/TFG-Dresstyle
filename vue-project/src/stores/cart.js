@@ -5,6 +5,7 @@ import { calculateShippingCost, calculateSubtotal, calculateTotal } from '@/util
 
 const CART_STORAGE_KEY = 'cart';
 const USER_CART_BACKUP_PREFIX = 'cart_user_';
+const FALLBACK_IMAGE_URL = '/ds/img/logo.png';
 
 function getCartStorage() {
   return typeof window !== 'undefined' ? window.sessionStorage : null;
@@ -126,12 +127,38 @@ function isLoggedInUser() {
   return authStore.isAuthenticated && authStore.isTokenValid;
 }
 
+function normalizeImageUrl(imageUrl) {
+  if (typeof imageUrl !== 'string') {
+    return FALLBACK_IMAGE_URL;
+  }
+
+  const trimmed = imageUrl.trim();
+
+  if (!trimmed) {
+    return FALLBACK_IMAGE_URL;
+  }
+
+  if (trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+    return FALLBACK_IMAGE_URL;
+  }
+
+  if (trimmed.length > 256) {
+    return FALLBACK_IMAGE_URL;
+  }
+
+  if (trimmed.startsWith('/') || /^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  return FALLBACK_IMAGE_URL;
+}
+
 function normalizeItem(item) {
   return {
     id: item?.id ?? '',
     name: item?.name ?? '',
     price: Number(item?.price ?? 0),
-    imageUrl: item?.imageUrl ?? '',
+    imageUrl: normalizeImageUrl(item?.imageUrl),
     quantity: Math.max(1, Number(item?.quantity ?? 1)),
     size: item?.size ?? null
   };
@@ -162,7 +189,25 @@ async function loadRemoteCart() {
 }
 
 async function saveRemoteCart(items) {
-  await http.put('/orders/cart', { items: items.map(normalizeItem) });
+  const sanitized = items.map((it) => {
+    const ni = normalizeItem(it)
+    if (typeof ni.imageUrl === 'string' && ni.imageUrl.startsWith('data:')) {
+      ni.imageUrl = '/ds/img/logo.png'
+    }
+    return ni
+  })
+
+  try {
+    await http.put('/orders/cart', { items: sanitized })
+  } catch (err) {
+    console.error('saveRemoteCart error', {
+      status: err?.response?.status,
+      data: err?.response?.data,
+      headers: err?.response?.headers,
+      url: err?.config?.url
+    })
+    throw err
+  }
 }
 
 function readGuestCartOnly() {
@@ -195,7 +240,7 @@ export const useCartStore = defineStore('cart', {
           id: product.id,
           name: product.name,
           price: product.price,
-          imageUrl: product.imageUrl,
+          imageUrl: normalizeImageUrl(product.imageUrl),
           quantity,
           size
         });
@@ -230,6 +275,8 @@ export const useCartStore = defineStore('cart', {
     },
 
     async persistCart() {
+      this.items = this.items.map(normalizeItem)
+
       if (isLoggedInUser()) {
         try {
           await saveRemoteCart(this.items);

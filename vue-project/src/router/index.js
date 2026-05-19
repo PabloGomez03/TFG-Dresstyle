@@ -7,6 +7,8 @@ import CartView from '@/views/CartView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import AdminPanelView from '@/views/AdminPanelView.vue'
 import SearchView from '@/views/SearchView.vue'
+import SubscriptionPlans from '@/components/SubscriptionPlans.vue'
+import AccountSubscriptions from '@/views/AccountSubscriptions.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,6 +59,18 @@ const router = createRouter({
       path: '/catalog',
       name: 'catalog',
       component: SearchView
+    }
+    ,
+    {
+      path: '/subscriptions',
+      name: 'subscriptions',
+      component: SubscriptionPlans
+    },
+    {
+      path: '/account/subscription',
+      name: 'account-subscription',
+      component: AccountSubscriptions,
+      meta: { requiresAuth: true }
     }
   ]
 })

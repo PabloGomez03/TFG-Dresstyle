@@ -1,12 +1,14 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useCartStore } from '@/stores/cart';
 import { useAuthStore } from '@/stores/auth';
+import { useSubscriptionStore } from '@/stores/subscription';
 import FooterItem from '@/components/FooterItem.vue';
 import HeaderItem from '@/components/HeaderItem.vue';
 
 const cartStore = useCartStore();
 const authStore = useAuthStore();
+const subStore = useSubscriptionStore();
 const message = ref('');
 const messageType = ref('');
 
@@ -33,6 +35,24 @@ onMounted(() => {
   authStore.initializeAuth();
   cartStore.loadCartFromStorage();
 });
+
+onMounted(async () => {
+  if (authStore.isAuthenticated) {
+    await subStore.fetchPlans()
+    await subStore.fetchUserSubscription()
+  }
+})
+
+const adjustedTotals = computed(() => {
+  const base = {
+    subtotal: cartStore.cartSubtotal,
+    shipping: cartStore.cartShippingCost,
+    total: cartStore.cartTotal
+  }
+
+  if (!subStore.userSubscription) return base
+  return subStore.applyBenefits(base)
+})
 </script>
 
 <template>
@@ -104,15 +124,15 @@ onMounted(() => {
             <h2>Resumen del Pedido</h2>
             <div class="summary-row">
               <span>Subtotal:</span>
-              <span>€{{ cartStore.cartSubtotal.toFixed(2) }}</span>
+              <span>€{{ adjustedTotals.subtotal.toFixed(2) }}</span>
             </div>
             <div class="summary-row">
               <span>Envío:</span>
-              <span>€{{ cartStore.cartShippingCost.toFixed(2) }}</span>
+              <span>€{{ adjustedTotals.shipping.toFixed(2) }}</span>
             </div>
             <div class="summary-row total">
               <span>Total:</span>
-              <span>€{{ cartStore.cartTotal.toFixed(2) }}</span>
+              <span>€{{ adjustedTotals.total.toFixed(2) }}</span>
             </div>
             <button @click="goHome" class="btn-continue-shopping">
               Continuar Comprando

@@ -1,16 +1,12 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth';
+import { useSubscriptionStore } from '@/stores/subscription';
 import { useRouter } from 'vue-router';
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 
 const authStore = useAuthStore();
 const router = useRouter();
 const searchQuery = ref('');
-
-/*const userRoles = computed(() => {
-  const roles = authStore.user?.roles;
-  return Array.isArray(roles) ? roles : roles ? [roles] : [];
-});*/
 
 const isAdmin = computed(() => {
   return authStore.isAdmin;
@@ -22,6 +18,14 @@ const isLoggedIn = computed(() => {
 
 const isUser = computed(() => {
   return isLoggedIn.value;
+});
+
+const subStore = useSubscriptionStore();
+
+onMounted(() => {
+  if (isLoggedIn.value) {
+    subStore.fetchUserSubscription();
+  }
 });
 
 const logout = () => {
@@ -81,6 +85,8 @@ defineProps({
           <img src="@/img/cart.png" :style="{ height: cartHeight }" class="cart-icon" alt="Carrito" />
         </router-link>
          <router-link to="/profile">Mi Perfil</router-link>
+         <router-link v-if="subStore.userSubscription" to="/account/subscription" class="nav-subscription">Suscrito ({{subStore.userSubscription.planId}})</router-link>
+         <router-link v-else to="/subscriptions" class="nav-plans">Ver Planes</router-link>
         <button @click="logout" class="btn-logout">Cerrar Sesión</button>
       </template>
 
