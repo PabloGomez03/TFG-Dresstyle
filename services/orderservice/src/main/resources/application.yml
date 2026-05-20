@@ -3,8 +3,14 @@ spring:
     name: order-service
   mongodb:
       uri: ${SPRING_DATA_MONGODB_URI:mongodb://mongodb:27017/dresstyle_orders}
+  rabbitmq:
+    host: ${RABBITMQ_HOST:rabbitmq}
+    port: 5672
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
 server:
   port: 8085
+
 
 eureka:
   client:
