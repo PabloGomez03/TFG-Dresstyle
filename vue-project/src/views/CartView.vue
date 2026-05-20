@@ -1,16 +1,19 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { useCartStore } from '@/stores/cart';
 import { useAuthStore } from '@/stores/auth';
 import { useSubscriptionStore } from '@/stores/subscription';
 import FooterItem from '@/components/FooterItem.vue';
 import HeaderItem from '@/components/HeaderItem.vue';
 
+const router = useRouter();
 const cartStore = useCartStore();
 const authStore = useAuthStore();
 const subStore = useSubscriptionStore();
 const message = ref('');
 const messageType = ref('');
+const showLoginModal = ref(false);
 
 const showMessage = (text, type) => {
   message.value = text;
@@ -21,14 +24,14 @@ const showMessage = (text, type) => {
   }, 3500);
 };
 
-const goHome = () => {
+const proceedToCheckout = () => {
   authStore.initializeAuth();
   if (!(authStore.isAuthenticated && authStore.isTokenValid)) {
-    showMessage('Debes registrarte o iniciar sesion para continuar con la compra.', 'error');
+    showLoginModal.value = true;
     return;
   }
 
-  window.location.assign('/');
+  router.push('/checkout');
 };
 
 onMounted(() => {
@@ -43,6 +46,11 @@ onMounted(async () => {
   }
 })
 
+const currentPlan = computed(() => {
+  if (!subStore.userSubscription) return null;
+  return subStore.userSubscription.plan || subStore.plans.find(p => p.id === subStore.userSubscription.plan?.id);
+});
+
 const adjustedTotals = computed(() => {
   const base = {
     subtotal: cartStore.cartSubtotal,
@@ -53,6 +61,7 @@ const adjustedTotals = computed(() => {
   if (!subStore.userSubscription) return base
   return subStore.applyBenefits(base)
 })
+
 </script>
 
 <template>
@@ -63,13 +72,26 @@ const adjustedTotals = computed(() => {
       <div class="cart-section">
         <h1>Mi Carrito de Compras</h1>
 
+        <!-- Modal de Login -->
+        <div v-if="showLoginModal" class="modal-overlay">
+          <div class="modal">
+            <h2>Acceso Requerido</h2>
+            <p>Debes iniciar sesión o registrarte para finalizar tu pedido.</p>
+            <div class="modal-actions">
+              <button @click="router.push('/auth/login?redirect=/checkout')" class="btn-primary">Iniciar Sesión</button>
+              <button @click="router.push('/auth/register')" class="btn-primary">Registrarse</button>
+              <button @click="showLoginModal = false" class="btn-secondary">Cancelar</button>
+            </div>
+          </div>
+        </div>
+
         <div v-if="message" :class="['message', messageType]">
           {{ message }}
         </div>
 
         <div v-if="cartStore.items.length === 0" class="empty-cart">
           <p>Tu carrito está vacío. Busca productos para agregarlos.</p>
-          <button @click="goHome" class="btn-continue-shopping">Continuar Comprando</button>
+          <button @click="() => router.push('/')" class="btn-continue-shopping">Continuar Comprando</button>
         </div>
 
         <div v-else class="cart-content">
@@ -124,7 +146,16 @@ const adjustedTotals = computed(() => {
             <h2>Resumen del Pedido</h2>
             <div class="summary-row">
               <span>Subtotal:</span>
-              <span>€{{ adjustedTotals.subtotal.toFixed(2) }}</span>
+              <span>
+                <span v-if="currentPlan && currentPlan.discountPercentage > 0" class="original-price">
+                  €{{ cartStore.cartSubtotal.toFixed(2) }}
+                </span>
+                €{{ adjustedTotals.subtotal.toFixed(2) }}
+              </span>
+            </div>
+            <div v-if="currentPlan && currentPlan.discountPercentage > 0" class="summary-row discount-info">
+              <span>Descuento ({{ currentPlan.discountPercentage }}%):</span>
+              <span class="discount-amount">-€{{ (cartStore.cartSubtotal - adjustedTotals.subtotal).toFixed(2) }}</span>
             </div>
             <div class="summary-row">
               <span>Envío:</span>
@@ -134,8 +165,11 @@ const adjustedTotals = computed(() => {
               <span>Total:</span>
               <span>€{{ adjustedTotals.total.toFixed(2) }}</span>
             </div>
-            <button @click="goHome" class="btn-continue-shopping">
-              Continuar Comprando
+            <button @click="proceedToCheckout" class="btn-checkout">
+              Finalizar Pedido
+            </button>
+            <button @click="() => router.push('/')" class="btn-continue-shopping">
+              Seguir Comprando
             </button>
           </div>
         </div>
@@ -156,6 +190,65 @@ const adjustedTotals = computed(() => {
 .cart-header {
   flex-shrink: 0;
 }
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.modal h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.modal p {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.btn-primary:hover { background: #5a6ed1; }
+
+.btn-secondary {
+  background: #f5f5f5;
+  color: #333;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.btn-secondary:hover { background: #e0e0e0; }
 
 .cart-main {
   flex: 1;
@@ -334,6 +427,22 @@ const adjustedTotals = computed(() => {
   top: 2rem;
 }
 
+.original-price {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 0.9em;
+  margin-right: 0.5rem;
+}
+
+.discount-info {
+  color: #28a745;
+  font-size: 0.9em;
+}
+
+.discount-amount {
+  font-weight: 600;
+}
+
 .cart-summary h2 {
   font-size: 1.3rem;
   margin: 0 0 1.5rem 0;
@@ -353,6 +462,24 @@ const adjustedTotals = computed(() => {
   font-size: 1.2rem;
   font-weight: 600;
   color: #333;
+}
+
+.btn-checkout {
+  width: 100%;
+  padding: 1rem;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.btn-checkout:hover {
+  background: #218838;
 }
 
 .btn-continue-shopping {

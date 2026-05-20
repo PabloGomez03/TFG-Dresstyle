@@ -1,6 +1,6 @@
 spring:
   application:
-    name: orderservice
+    name: order-service
   mongodb:
       uri: ${SPRING_DATA_MONGODB_URI:mongodb://mongodb:27017/dresstyle_orders}
 server:

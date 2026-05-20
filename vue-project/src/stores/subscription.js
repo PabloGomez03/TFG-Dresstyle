@@ -18,7 +18,7 @@ export const useSubscriptionStore = defineStore('subscription', {
     },
     async fetchUserSubscription() {
       try {
-        const res = await http.get('/subscription/user')
+        const res = await http.get('/subscription/my-subscription')
         this.userSubscription = res.data
       } catch {
         this.userSubscription = null
@@ -37,20 +37,19 @@ export const useSubscriptionStore = defineStore('subscription', {
     async unsubscribe() {
       this.loading = true
       try {
-        await http.delete('/subscription/unsubscribe')
+        await http.post('/subscription/cancel')
         this.userSubscription = null
       } finally {
         this.loading = false
       }
     },
-    // cart is an object: { subtotal, shipping, total } or items array
     applyBenefits(cart) {
       if (!this.userSubscription) return cart
-      const plan = this.plans.find(p => p.id === this.userSubscription.planId)
+      const plan = this.userSubscription.plan || this.plans.find(p => p.id === this.userSubscription.plan?.id)
       if (!plan) return cart
 
-      const discountPct = plan?.benefits?.discountPct || 0
-      const freeShipping = !!plan?.benefits?.freeShipping
+      const discountPct = plan?.discountPercentage || 0
+      const freeShipping = !!plan?.freeShipping
 
       const subtotal = typeof cart.subtotal === 'number' ? cart.subtotal : cart.subtotal || 0
       const shipping = typeof cart.shipping === 'number' ? cart.shipping : cart.shipping || 0

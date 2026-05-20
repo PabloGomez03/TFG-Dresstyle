@@ -9,6 +9,7 @@ import AdminPanelView from '@/views/AdminPanelView.vue'
 import SearchView from '@/views/SearchView.vue'
 import SubscriptionPlans from '@/components/SubscriptionPlans.vue'
 import AccountSubscriptions from '@/views/AccountSubscriptions.vue'
+import CheckoutView from '@/views/CheckoutView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,6 +36,12 @@ const router = createRouter({
       name:'cart',
       component: CartView,
 
+    },
+    {
+      path:'/checkout',
+      name:'checkout',
+      component: CheckoutView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/profile',

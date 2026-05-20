@@ -13,7 +13,7 @@ onMounted(async () => {
 
 const currentPlan = computed(() => {
   if (!subStore.userSubscription) return null
-  return subStore.plans.find(p => p.id === subStore.userSubscription.planId)
+  return subStore.userSubscription.plan || subStore.plans.find(p => p.id === subStore.userSubscription.plan?.id)
 })
 </script>
 
@@ -35,7 +35,7 @@ const currentPlan = computed(() => {
 
         <div v-else class="active-subscription">
           <div class="plan-info">
-            <h2>{{ currentPlan?.name || subStore.userSubscription.planId }}</h2>
+            <h2>{{ currentPlan?.name || 'Suscripción Activa' }}</h2>
             <p class="plan-description">{{ currentPlan?.description }}</p>
           </div>
 
@@ -43,17 +43,17 @@ const currentPlan = computed(() => {
             <div class="detail-card">
               <h3>Información de la Suscripción</h3>
               <ul>
-                <li><strong>Plan:</strong> {{ currentPlan?.name || subStore.userSubscription.planId }}</li>
-                <li v-if="subStore.userSubscription.startedAt"><strong>Activa desde:</strong> {{ new Date(subStore.userSubscription.startedAt).toLocaleDateString() }}</li>
-                <li v-if="subStore.userSubscription.expiresAt"><strong>Vencimiento:</strong> {{ new Date(subStore.userSubscription.expiresAt).toLocaleDateString() }}</li>
+                <li><strong>Plan:</strong> {{ currentPlan?.name || 'Desconocido' }}</li>
+                <li v-if="subStore.userSubscription.startDate"><strong>Activa desde:</strong> {{ new Date(subStore.userSubscription.startDate).toLocaleDateString() }}</li>
+                <li v-if="subStore.userSubscription.endDate"><strong>Vencimiento:</strong> {{ new Date(subStore.userSubscription.endDate).toLocaleDateString() }}</li>
               </ul>
             </div>
 
             <div class="benefits-card">
               <h3>Beneficios Incluidos</h3>
-              <ul v-if="currentPlan?.benefits">
-                <li v-if="currentPlan.benefits.freeShipping">✓ Envío gratis en todas tus compras</li>
-                <li v-if="currentPlan.benefits.discountPct">✓ {{ currentPlan.benefits.discountPct }}% de descuento en todos los productos</li>
+              <ul v-if="currentPlan">
+                <li v-if="currentPlan.freeShipping"> Envío gratis en todas tus compras</li>
+                <li v-if="currentPlan.discountPercentage"> {{ currentPlan.discountPercentage }}% de descuento en todos los productos</li>
               </ul>
               <p v-else>Disfruta los beneficios de tu plan</p>
             </div>

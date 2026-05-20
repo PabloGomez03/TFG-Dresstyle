@@ -25,6 +25,10 @@ html,body {
   background: transparent;
 }
 
+button, input, select, textarea, .btn, a.btn, a[class*="btn-"] {
+  font-family: 'TFG-Dresstyle-Font', sans-serif;
+}
+
 footer, header {
   font-family: 'TFG-Dresstyle-Font', sans-serif;
 }

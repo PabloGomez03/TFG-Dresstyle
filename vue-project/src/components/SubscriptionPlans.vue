@@ -34,15 +34,15 @@ onMounted(async () => {
           <div class="benefits">
             <h4>Beneficios Incluidos:</h4>
             <ul>
-              <li v-if="plan.benefits?.freeShipping" class="benefit-item">
+              <li v-if="plan.freeShipping" class="benefit-item">
                 <span class="benefit-icon">🚚</span>
                 <span>Envío gratis</span>
               </li>
-              <li v-if="plan.benefits?.discountPct" class="benefit-item">
+              <li v-if="plan.discountPercentage > 0" class="benefit-item">
                 <span class="benefit-icon">💰</span>
-                <span>{{ plan.benefits.discountPct }}% de descuento en compras</span>
+                <span>{{ plan.discountPercentage }}% de descuento en compras</span>
               </li>
-              <li v-if="!plan.benefits?.freeShipping && !plan.benefits?.discountPct" class="benefit-item">
+              <li v-if="!plan.freeShipping && (!plan.discountPercentage || plan.discountPercentage === 0)" class="benefit-item">
                 <span class="benefit-icon">⭐</span>
                 <span>Acceso a suscripción estándar</span>
               </li>
@@ -63,14 +63,14 @@ onMounted(async () => {
           <div class="table-row">
             <div class="table-cell feature">Envío Gratis</div>
             <div class="table-cell" v-for="plan in subStore.plans" :key="plan.id">
-              <span v-if="plan.benefits?.freeShipping">✓</span>
+              <span v-if="plan.freeShipping">✓</span>
               <span v-else>-</span>
             </div>
           </div>
           <div class="table-row">
             <div class="table-cell feature">Descuento en Productos</div>
             <div class="table-cell" v-for="plan in subStore.plans" :key="plan.id">
-              <span v-if="plan.benefits?.discountPct">{{ plan.benefits.discountPct }}%</span>
+              <span v-if="plan.discountPercentage > 0">{{ plan.discountPercentage }}%</span>
               <span v-else>-</span>
             </div>
           </div>

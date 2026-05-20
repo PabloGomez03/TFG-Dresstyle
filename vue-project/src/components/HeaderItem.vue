@@ -85,8 +85,8 @@ defineProps({
           <img src="@/img/cart.png" :style="{ height: cartHeight }" class="cart-icon" alt="Carrito" />
         </router-link>
          <router-link to="/profile">Mi Perfil</router-link>
-         <router-link v-if="subStore.userSubscription" to="/account/subscription" class="nav-subscription">Suscrito ({{subStore.userSubscription.planId}})</router-link>
-         <router-link v-else to="/subscriptions" class="nav-plans">Ver Planes</router-link>
+         <router-link v-if="subStore.userSubscription" to="/account/subscription" class="nav-subscription btn-subscribed">Suscrito</router-link>
+         <router-link v-else to="/subscriptions" class="nav-plans btn-subscribed">Ver Planes</router-link>
         <button @click="logout" class="btn-logout">Cerrar Sesión</button>
       </template>
 
@@ -147,6 +147,19 @@ defineProps({
 .btn-logout:hover {
   background-color: #ff4d4d;
   color: #ffffff;
+}
+
+.btn-subscribed {
+  background-color: #667eea;
+  color: #ffffff !important;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.btn-subscribed:hover {
+  background-color: #5568d3;
 }
 .btn-register {
   background-color: #3498db;
