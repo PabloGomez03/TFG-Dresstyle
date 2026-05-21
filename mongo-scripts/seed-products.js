@@ -43,8 +43,8 @@ const colors = [
   'Arena'
 ];
 
-// URL del logo que está servida por el frontend (ruta relativa bajo /ds)
-const LOGO_URL = '/ds/img/logo.png';
+// URL del logo de DresStyle desde Cloudinary
+const LOGO_URL = 'https://res.cloudinary.com/dapegkgwi/image/upload/v1779390582/logo_rkcr0x.png';
 
 // Función para generar URLs de imagen para cada producto
 function generateImageUrl(index) {

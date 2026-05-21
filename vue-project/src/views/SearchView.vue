@@ -191,20 +191,24 @@ watch(
             :key="product.id"
             class="product-card"
           >
-            <div class="product-image">
-              <img :src="product.imageUrl" :alt="product.name" />
-            </div>
-
-            <div class="product-info">
-              <h3>{{ product.name }}</h3>
-              <p class="product-description">{{ product.description }}</p>
-
-              <div class="product-price">
-                <span class="price">${{ parseFloat(product.price).toFixed(2) }}</span>
+            <router-link :to="{ name: 'product-detail', params: { id: product.id } }" class="product-link">
+              <div class="product-image">
+                <img :src="product.imageUrl" :alt="product.name" />
               </div>
 
+              <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p class="product-description">{{ product.description }}</p>
+
+                <div class="product-price">
+                  <span class="price">${{ parseFloat(product.price).toFixed(2) }}</span>
+                </div>
+              </div>
+            </router-link>
+
+            <div class="product-actions">
               <div class="size-selector">
-                <label for="size">Talla:</label>
+                <label :for="`size-${product.id}`">Talla:</label>
                 <select
                   :id="`size-${product.id}`"
                   v-model="selectedSizes[product.id]"
@@ -406,6 +410,15 @@ watch(
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
+.product-link {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
 .product-image {
   width: 100%;
   height: 250px;
@@ -466,6 +479,14 @@ watch(
   color: #667eea;
 }
 
+.product-actions {
+  padding: 1.5rem;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .size-selector {
   margin-bottom: 1rem;
 }
@@ -505,7 +526,6 @@ watch(
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  margin-top: auto;
 }
 
 .btn-add-cart:hover:not(:disabled) {
@@ -551,6 +571,10 @@ watch(
   }
 
   .product-info {
+    padding: 1rem;
+  }
+
+  .product-actions {
     padding: 1rem;
   }
 }

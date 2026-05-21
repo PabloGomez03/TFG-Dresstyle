@@ -371,6 +371,35 @@ const goToProfile = () => {
 .modal-actions .btn-primary,
 .modal-actions .btn-secondary {
   width: 100%;
+  padding: 0.9rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.modal-actions .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.modal-actions .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+}
+
+.modal-actions .btn-secondary {
+  background: rgba(255, 255, 255, 0.95);
+  color: #12304f;
+  border: 1.5px solid rgba(102, 126, 234, 0.25);
+}
+
+.modal-actions .btn-secondary:hover {
+  background: #ffffff;
+  transform: translateY(-2px);
+  border-color: #667eea;
 }
 
 .addresses-list {

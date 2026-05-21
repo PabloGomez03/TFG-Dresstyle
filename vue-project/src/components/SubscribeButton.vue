@@ -29,7 +29,7 @@ const subscribe = async () => {
   loading.value = true
   try {
     await subStore.subscribe(props.planId)
-    showMessage('Â¡SuscripciÃ³n activada correctamente!', 'success')
+    showMessage('Suscripción activada correctamente!', 'success')
     setTimeout(() => {
       router.push('/account/subscription')
     }, 2000)

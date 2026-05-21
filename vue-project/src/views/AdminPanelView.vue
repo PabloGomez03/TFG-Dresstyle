@@ -390,7 +390,7 @@ function goToPreviousPage() {
                   <span v-else>-</span>
                 </td>
                 <td>{{ product.name }}</td>
-                <td>{{ product.description || '-' }}</td>
+                <td class="product-description">{{ product.description || '-' }}</td>
                 <td>{{ product.category || '-' }}</td>
                 <td>{{ product.price.toFixed(2) }} €</td>
                 <td>{{ product.stock }}</td>
@@ -712,6 +712,7 @@ button.danger {
 table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 th,
@@ -720,10 +721,54 @@ td {
   border-bottom: 1px solid #e5e7eb;
   text-align: left;
   vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 th {
   color: #374151;
+  font-weight: 600;
+}
+
+th:nth-child(1) {
+  width: 80px;
+}
+
+th:nth-child(2) {
+  width: 150px;
+}
+
+th:nth-child(3) {
+  width: 25%;
+}
+
+th:nth-child(4) {
+  width: 100px;
+}
+
+th:nth-child(5) {
+  width: 90px;
+}
+
+th:nth-child(6) {
+  width: 70px;
+}
+
+th:nth-child(7) {
+  width: 150px;
+}
+
+td:nth-child(3) {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: initial;
+}
+
+td:nth-child(7) {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: initial;
 }
 
 .product-thumb {
@@ -732,6 +777,14 @@ th {
   border-radius: 6px;
   object-fit: cover;
   border: 1px solid #e5e7eb;
+}
+
+.product-description {
+  white-space: normal;
+  word-wrap: break-word;
+  max-height: 3em;
+  overflow: hidden;
+  line-height: 1em;
 }
 
 .action-buttons {

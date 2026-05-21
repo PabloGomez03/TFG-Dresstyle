@@ -7,6 +7,7 @@ import CartView from '@/views/CartView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import AdminPanelView from '@/views/AdminPanelView.vue'
 import SearchView from '@/views/SearchView.vue'
+import ProductDetailView from '@/views/ProductDetailView.vue'
 import SubscriptionPlans from '@/components/SubscriptionPlans.vue'
 import AccountSubscriptions from '@/views/AccountSubscriptions.vue'
 import CheckoutView from '@/views/CheckoutView.vue'
@@ -66,8 +67,12 @@ const router = createRouter({
       path: '/catalog',
       name: 'catalog',
       component: SearchView
-    }
-    ,
+    },
+    {
+      path: '/product/:id',
+      name: 'product-detail',
+      component: ProductDetailView
+    },
     {
       path: '/subscriptions',
       name: 'subscriptions',
