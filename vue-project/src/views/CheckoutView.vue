@@ -24,6 +24,9 @@ const loading = ref(false)
 const userAddresses = ref([])
 const selectedAddressIndex = ref(0)
 const loadingAddresses = ref(true)
+const showSuccessModal = ref(false)
+const orderResult = ref(null)
+const orderError = ref('')
 
 onMounted(async () => {
   cartStore.loadCartFromStorage()
@@ -105,15 +108,27 @@ const placeOrder = async () => {
       total: adjustedTotals.value.total
     }
 
-    await http.post('/orders/checkout', orderPayload)
-    cartStore.clearCart() // Llama a limpiar carrito en front y persistido en local storage (opcional en auth) si lo manejas desde store
-    router.push({ name: 'home', query: { orderSuccess: 'true' } })
+    const response = await http.post('/orders/checkout', orderPayload)
+    orderResult.value = response.data
+    await cartStore.clearCart() // Llama a limpiar carrito en front y persistido en local storage (opcional en auth) si lo manejas desde store
+    showSuccessModal.value = true
   } catch (err) {
     error.value = 'Ocurrió un error al procesar el pedido. Inténtalo de nuevo.'
+    orderError.value = err.response?.data?.message || ''
     console.error(err)
   } finally {
     loading.value = false
   }
+}
+
+const closeSuccessModal = () => {
+  showSuccessModal.value = false
+  router.push('/')
+}
+
+const goToProfile = () => {
+  showSuccessModal.value = false
+  router.push('/profile')
 }
 </script>
 
@@ -204,6 +219,22 @@ const placeOrder = async () => {
           <button @click="placeOrder" :disabled="loading" class="btn-checkout">
             {{ loading ? 'Procesando...' : 'Finalizar Pedido' }}
           </button>
+        </div>
+      </div>
+
+      <div v-if="showSuccessModal" class="modal-overlay">
+        <div class="modal success-modal">
+          <h2>Pedido realizado</h2>
+          <p>¡Tu pedido se ha procesado correctamente!</p>
+          <div v-if="orderResult" class="order-summary-card">
+            <p><strong>Pedido:</strong> {{ orderResult.id || 'N/A' }}</p>
+            <p><strong>Total:</strong> €{{ orderResult.total?.toFixed(2) ?? adjustedTotals.total.toFixed(2) }}</p>
+            <p v-if="orderResult.createdAt"><strong>Fecha:</strong> {{ new Date(orderResult.createdAt).toLocaleString() }}</p>
+          </div>
+          <div class="modal-actions">
+            <button @click="goToProfile" class="btn-primary">Ver mi perfil</button>
+            <button @click="closeSuccessModal" class="btn-secondary">Seguir comprando</button>
+          </div>
         </div>
       </div>
     </main>
@@ -301,6 +332,45 @@ const placeOrder = async () => {
 .address-selector p {
   margin-bottom: 1rem;
   color: #555;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal.success-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: min(460px, calc(100% - 2rem));
+  padding: 2rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.order-summary-card {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.modal-actions .btn-primary,
+.modal-actions .btn-secondary {
+  width: 100%;
 }
 
 .addresses-list {

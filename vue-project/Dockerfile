@@ -1,5 +1,5 @@
 #Construcción 
-FROM node:lts-iron AS build-stage
+FROM node:22.12-alpine AS build-stage
 WORKDIR /app
 
 # Instalamos dependencias

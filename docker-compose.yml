@@ -122,9 +122,21 @@ services:
   notification-service:
     build: ./services/notificationservice
     container_name: dresstyle-notification
+    ports:
+      - "8084:8080"
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_USERNAME:-admin}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-admin123}
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - NOTIFICATION_EMAIL_ENABLED=${NOTIFICATION_EMAIL_ENABLED:-true}
+      - SPRING_MAIL_HOST=${SPRING_MAIL_HOST:-smtp.example.com}
+      - SPRING_MAIL_PORT=${SPRING_MAIL_PORT:-587}
+      - SPRING_MAIL_USERNAME=${SPRING_MAIL_USERNAME:?Please set SPRING_MAIL_USERNAME}
+      - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD:?Please set SPRING_MAIL_PASSWORD}
+      - SPRING_MAIL_SMTP_AUTH=true
+      - SPRING_MAIL_STARTTLS_ENABLE=true
+      - NOTIFICATION_FROM=${NOTIFICATION_FROM:-${SPRING_MAIL_USERNAME}}
     depends_on:
       rabbitmq:
         condition: service_healthy

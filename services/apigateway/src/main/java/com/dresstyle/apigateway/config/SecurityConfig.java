@@ -80,8 +80,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // IMPORTANTE: Permitimos el origen de Vite explícitamente
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:80"));
+        // IMPORTANTE: Permitimos el origen de Vite y el frontend en localhost sin puerto explícito
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost",
+                "http://localhost:80",
+                "http://127.0.0.1",
+                "http://127.0.0.1:5173",
+                "http://localhost:5173"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

@@ -20,6 +20,9 @@ const emptyAddress = () => ({
   country: ''
 });
 
+const orders = ref([])
+const ordersLoading = ref(false)
+
 const profileData = reactive({
   userId: '',
   firstName: '',
@@ -40,6 +43,19 @@ const selectedAddress = computed(() => {
   if (!profileData.addresses.length) return null;
   return profileData.addresses[selectedAddressIndex.value] || profileData.addresses[0];
 });
+
+const loadOrders = async () => {
+  try {
+    ordersLoading.value = true;
+    const response = await http.get('/orders/my-orders');
+    orders.value = Array.isArray(response.data) ? response.data : [];
+  } catch (error) {
+    console.error('Error cargando historial de pedidos:', error);
+    showMessage('Error al cargar el historial de pedidos', 'error');
+  } finally {
+    ordersLoading.value = false;
+  }
+};
 
 const loadProfile = async () => {
   try {
@@ -136,9 +152,10 @@ const showMessage = (text, type) => {
   }, 5000);
 };
 
-onMounted(() => {
+onMounted(async () => {
   authStore.initializeAuth();
-  loadProfile();
+  await loadProfile();
+  await loadOrders();
 });
 </script>
 
@@ -203,6 +220,36 @@ onMounted(() => {
               </div>
 
               <p v-else>No hay direcciones registradas</p>
+            </div>
+          </div>
+
+          <div class="order-history">
+            <h2>Historial de Pedidos</h2>
+
+            <div v-if="ordersLoading" class="loading-state">
+              Cargando pedidos...
+            </div>
+
+            <div v-else-if="orders.length === 0" class="empty-orders">
+              <p>No has realizado pedidos aún.</p>
+            </div>
+
+            <div v-else class="orders-list">
+              <div v-for="order in orders" :key="order.id" class="order-card">
+                <div class="order-card-header">
+                  <div>
+                    <p class="order-id">Pedido #{{ order.id }}</p>
+                    <p class="order-date">{{ new Date(order.createdAt).toLocaleString() }}</p>
+                  </div>
+                  <p class="order-total">€{{ order.total.toFixed(2) }}</p>
+                </div>
+                <div class="order-items">
+                  <div v-for="item in order.items" :key="item.id + item.size" class="order-item">
+                    <span>{{ item.name }}</span>
+                    <span>{{ item.quantity }} x €{{ item.price.toFixed(2) }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -518,11 +565,71 @@ onMounted(() => {
   gap: 0.8rem;
 }
 
-.address-select {
-  max-width: 220px;
-  padding: 0.5rem 0.65rem;
-  border: 1px solid #d7d7d7;
-  border-radius: 6px;
+.order-history {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.order-history h2 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.orders-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.order-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.order-id {
+  font-weight: 700;
+  margin: 0;
+}
+
+.order-date {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 0.25rem 0 0;
+}
+
+.order-total {
+  font-weight: 700;
+  color: #212529;
+}
+
+.order-items {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #dee2e6;
+  padding: 0.5rem 0 0;
+  font-size: 0.95rem;
+}
+
+.empty-orders {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  padding: 1rem;
+  border-radius: 8px;
 }
 
 .address-details {

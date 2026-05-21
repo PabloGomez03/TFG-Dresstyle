@@ -1,20 +1,18 @@
-# Usamos una imagen de Maven con Java 21 para compilar el proyecto
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+# Usamos una imagen de Maven con Java 17 para compilar el proyecto
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copiamos el archivo de configuración de dependencias
+# Copiamos el pom y el código
 COPY pom.xml .
-
-# Descargamos las dependencias
-RUN mvn dependency:go-offline
-
-# Copiamos el código fuente y compilamos el .jar saltandonos los tests
 COPY src ./src
-RUN mvn clean package -DskipTests
+
+# Compilamos el .jar saltandonos los tests
+# Utilizamos cache de Maven para acelerar builds posteriores
+RUN --mount=type=cache,target=/root/.m2 mvn -B clean package -DskipTests
 
 
 # Usamos una imagen ligera de solo JRE (Java Runtime Environment)
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 # Copiamos solo el archivo .jar generado en la etapa anterior
