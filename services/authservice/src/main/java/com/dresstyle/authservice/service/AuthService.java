@@ -7,7 +7,7 @@ import com.dresstyle.authservice.dto.ProfileAddressDto;
 import com.dresstyle.authservice.dto.RegisterRequest;
 import com.dresstyle.authservice.dto.UpdateUserProfileRequest;
 import com.dresstyle.authservice.dto.UserProfileResponse;
-import com.dresstyle.authservice.dto.UserRegisteredEvent;
+import com.dresstyle.dto.UserRegisteredEvent;
 import com.dresstyle.authservice.exception.ExistingEmailException;
 import com.dresstyle.authservice.repository.UserRepository;
 import com.dresstyle.authservice.model.Address;

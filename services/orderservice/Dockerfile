@@ -1,5 +1,5 @@
-# Usamos una imagen de Maven con Java 21 para compilar el proyecto
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+# Usamos una imagen de Maven con Java 17 para compilar el proyecto
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
 # Copiamos el archivo de configuración de dependencias
@@ -14,7 +14,7 @@ RUN mvn clean package -DskipTests
 
 
 # Usamos una imagen ligera de solo JRE (Java Runtime Environment)
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 # Copiamos solo el archivo .jar generado en la etapa anterior

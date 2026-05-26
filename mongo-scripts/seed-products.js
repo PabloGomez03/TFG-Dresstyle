@@ -66,17 +66,17 @@ function buildStock(index, category) {
 
 function buildPrice(category, index) {
   const basePrice = {
-    'Zapatos': 59.99,
-    'Abrigo': 89.99,
-    'Vestido': 49.99,
-    'Camisa': 29.99,
-    'Jersey': 34.99,
-    'Pantalón': 39.99,
-    'Falda': 24.99,
-    'Otro': 19.99
-  }[category] ?? 17.99;
+    'Zapatos': 55.00,
+    'Abrigo': 82.50,
+    'Vestido': 46.00,
+    'Camisa': 27.50,
+    'Jersey': 32.00,
+    'Pantalón': 36.50,
+    'Falda': 23.00,
+    'Otro': 18.50
+  }[category] ?? 16.50;
 
-  return Math.round((basePrice + ((index % 15) * 1.75)) * 100) / 100;
+  return Math.round((basePrice + ((index % 15) * 1.61)) * 100) / 100;
 }
 
 function buildDescription(category, style, color) {

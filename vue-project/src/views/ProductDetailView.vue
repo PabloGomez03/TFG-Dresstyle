@@ -130,7 +130,7 @@ onMounted(() => {
             </div>
 
             <div class="product-price-section">
-              <span class="price">${{ parseFloat(product.price).toFixed(2) }}</span>
+              <span class="price">€{{ parseFloat(product.price).toFixed(2) }}</span>
               <span v-if="product.stock > 0" class="stock-available">
                 Stock disponible: {{ product.stock }} unidades
               </span>

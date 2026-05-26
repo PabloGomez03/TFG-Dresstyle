@@ -136,7 +136,7 @@ services:
       - SPRING_MAIL_PASSWORD=${SPRING_MAIL_PASSWORD:?Please set SPRING_MAIL_PASSWORD}
       - SPRING_MAIL_SMTP_AUTH=true
       - SPRING_MAIL_STARTTLS_ENABLE=true
-      - NOTIFICATION_FROM=${NOTIFICATION_FROM:-${SPRING_MAIL_USERNAME}}
+      - NOTIFICATION_FROM=${NOTIFICATION_FROM:-noreply@dresstyle.com}
     depends_on:
       rabbitmq:
         condition: service_healthy

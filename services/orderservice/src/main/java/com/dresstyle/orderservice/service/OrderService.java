@@ -1,8 +1,8 @@
 package com.dresstyle.orderservice.service;
 
 import com.dresstyle.orderservice.dto.OrderRequest;
-import com.dresstyle.orderservice.dto.OrderPlacedEvent;
-import com.dresstyle.orderservice.dto.OrderItemDto;
+import com.dresstyle.dto.OrderPlacedEvent;
+import com.dresstyle.dto.OrderItemSummary;
 import com.dresstyle.orderservice.model.Order;
 import com.dresstyle.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +24,9 @@ public class OrderService {
     private final CartService cartService;
     private final RabbitTemplate rabbitTemplate;
 
-    public Order createOrder(String userId, OrderRequest request) {
+    public Order createOrder(String email, OrderRequest request) {
         Order order = Order.builder()
-                .userId(userId)
+                .userId(email)
                 .items(request.getItems())
                 .shippingAddress(request.getShippingAddress())
                 .subtotal(request.getSubtotal())
@@ -38,17 +38,17 @@ public class OrderService {
                 .build();
 
         Order savedOrder = orderRepository.save(order);
-        cartService.clearCart(userId);
+        cartService.clearCart(email);
 
-        publishOrderPlacedEvent(savedOrder, userId);
+        publishOrderPlacedEvent(savedOrder, email);
 
         return savedOrder;
     }
 
     private void publishOrderPlacedEvent(Order order, String email) {
         try {
-            List<OrderItemDto> items = order.getItems().stream()
-                    .map(item -> OrderItemDto.builder()
+            List<OrderItemSummary> items = order.getItems().stream()
+                    .map(item -> OrderItemSummary.builder()
                             .id(item.getId())
                             .name(item.getName())
                             .size(item.getSize())

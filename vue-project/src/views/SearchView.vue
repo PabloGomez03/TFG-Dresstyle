@@ -201,7 +201,7 @@ watch(
                 <p class="product-description">{{ product.description }}</p>
 
                 <div class="product-price">
-                  <span class="price">${{ parseFloat(product.price).toFixed(2) }}</span>
+                  <span class="price">€{{ parseFloat(product.price).toFixed(2) }}</span>
                 </div>
               </div>
             </router-link>
