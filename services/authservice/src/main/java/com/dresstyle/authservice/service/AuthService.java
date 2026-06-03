@@ -34,7 +34,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService; // Inyectar el servicio de tokens
+    private final JwtService jwtService; 
     private final RabbitTemplate rabbitTemplate;
 
     public AuthResponse login(LoginRequest request) {
@@ -42,15 +42,15 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
 
-        // Verificar contraseña
+        
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             throw new RuntimeException("Credenciales inválidas");
         }
 
-        // Generar el token JWT
+        
         String token = jwtService.generateToken(user);
 
-        // Devolver la respuesta oficial
+        
         return AuthResponse.builder()
                 .token(token)
                 .userId(user.getUserId())
@@ -60,12 +60,12 @@ public class AuthService {
     }
 
     public void register(RegisterRequest request) {
-        //Validar si el email ya existe
+        
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ExistingEmailException("Ya existe un usuario con el mismo email!");
         }
 
-        // Mapear DTO a User y cifrar contraseña
+        
         User newUser = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
@@ -74,17 +74,17 @@ public class AuthService {
                 .activeSubscription(false)
                 .build();
 
-        // 3. Persistir en MongoDB
+        
         userRepository.save(newUser);
 
-        // Crear el evento
+        
         UserRegisteredEvent event = UserRegisteredEvent.builder()
                 .email(newUser.getEmail())
                 .nombre(newUser.getName())
                 .userId(newUser.getUserId())
                 .build();
 
-        // Si falla la notificacion no bloqueamos el registro del usuario ya persistido.
+        
         try {
             rabbitTemplate.convertAndSend("notificationExchange", "registrationRoutingKey", event);
         } catch (AmqpException ex) {

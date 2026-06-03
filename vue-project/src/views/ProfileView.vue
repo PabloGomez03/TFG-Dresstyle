@@ -168,12 +168,12 @@ onMounted(async () => {
     <main class="profile-main">
       <div :class="['profile-card', { 'profile-card-editing': isEditing }]">
 
-        <!-- Mensaje de éxito/error -->
+        
         <div v-if="message" :class="['message', messageType]">
           {{ message }}
         </div>
 
-        <!-- Modo Visualización -->
+        
         <div v-if="!isEditing" class="profile-view">
           <div class="profile-header-title">
             <h1>Mi Perfil</h1>
@@ -254,7 +254,7 @@ onMounted(async () => {
           </div>
         </div>
 
-        <!-- Modo Edición -->
+        
         <div v-else class="profile-edit">
           <div class="profile-header-title">
             <h1>Editar Perfil</h1>
@@ -479,7 +479,7 @@ onMounted(async () => {
   border: 1px solid #f5c6cb;
 }
 
-/* Botones */
+
 .btn-edit,
 .btn-cancel,
 .btn-save {
@@ -528,7 +528,7 @@ onMounted(async () => {
   cursor: not-allowed;
 }
 
-/* Vista de Perfil */
+
 .profile-info {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -644,7 +644,7 @@ onMounted(async () => {
   margin: 0;
 }
 
-/* Formulario de Edición */
+
 .edit-form {
   display: grid;
   grid-template-columns: 1fr 1fr;

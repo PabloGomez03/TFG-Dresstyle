@@ -233,7 +233,7 @@ const registerUser = async () => {
 
 .register-view {
   display: flex;
-  flex-direction: column; /*Ocupa toda la altura de la ventana de home*/
+  flex-direction: column; 
   min-height: 100vh;
   transition: filter 0.3s ease;
 }

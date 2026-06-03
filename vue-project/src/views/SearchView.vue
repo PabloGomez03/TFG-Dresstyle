@@ -23,7 +23,7 @@ const messageType = ref('');
 const isCatalogMode = computed(() => route.name === 'catalog' || route.query.catalog === '1');
 
 const visibleProducts = computed(() => {
-  // El backend ya devuelve la lista filtrada/paginada desde Mongo.
+  
   return products.value;
 });
 
@@ -137,7 +137,7 @@ const addToCart = async (product) => {
   const selectedSize = selectedSizes.value[product.id];
   const availableSizes = getSizesForCategory(product.category);
 
-  // Si la categoría tiene más de una talla disponible y no es "Única", requiere selección
+  
   if (availableSizes.length > 1 && availableSizes[0] !== 'Única' && !selectedSize) {
     showMessage('Por favor selecciona una talla', 'error');
     return;

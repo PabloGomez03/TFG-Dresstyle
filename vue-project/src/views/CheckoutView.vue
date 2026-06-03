@@ -44,7 +44,7 @@ onMounted(async () => {
     userAddresses.value = addresses
 
     if (addresses.length > 0) {
-      // Por defecto seleccionamos la primera (o se podria buscar isDefault si existe)
+      
       selectedAddressIndex.value = 0
     }
   } catch (err) {
@@ -110,7 +110,7 @@ const placeOrder = async () => {
 
     const response = await http.post('/orders/checkout', orderPayload)
     orderResult.value = response.data
-    await cartStore.clearCart() // Llama a limpiar carrito en front y persistido en local storage (opcional en auth) si lo manejas desde store
+    await cartStore.clearCart() 
     showSuccessModal.value = true
   } catch (err) {
     error.value = 'Ocurrió un error al procesar el pedido. Inténtalo de nuevo.'

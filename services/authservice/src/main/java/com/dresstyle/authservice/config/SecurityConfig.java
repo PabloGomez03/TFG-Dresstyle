@@ -28,13 +28,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-             //DESHABILITAR CSRF: Obligatorio para arquitecturas REST sin estado (APIs)
+             
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.decoder(jwtDecoder())))
-            //PERMISOS DE RUTAS: Permitir el paso al controlador de autenticación
+            
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login", "/auth/register", "/exception").permitAll()
+                .requestMatchers("/auth/login", "/auth/register", "/exception", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
             );
 
@@ -43,7 +43,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Algoritmo para cifrar las contraseñas
+        return new BCryptPasswordEncoder(); 
     }
 
     @Bean

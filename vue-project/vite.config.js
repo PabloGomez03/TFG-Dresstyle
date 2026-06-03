@@ -11,8 +11,8 @@ export default defineConfig({
     vue(),
     vueDevTools(),
   ],
-  // Dev server proxy: forward requests starting with /api to the Spring backend
-  // This avoids CORS during development. The backend is expected at http://localhost:8080
+  
+  
   server: {
     port:5173,
     proxy: {

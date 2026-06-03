@@ -15,7 +15,7 @@ public class UpdateUserProfileRequest {
     private String firstName;
     private String lastName;
     private String phone;
-    // Compatibilidad con payload antiguo de direccion unica.
+    
     private String address;
     private String city;
     private String zipCode;

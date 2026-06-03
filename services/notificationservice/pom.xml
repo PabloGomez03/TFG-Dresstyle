@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>4.0.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/> 
 	</parent>
 	<groupId>com.dresstyle</groupId>
 	<artifactId>notificationservice</artifactId>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <!-->Dependencia para comprobar el estado de este microservicio, en http://localhost:8081/actuator/health</!-->
+            
         </dependency>
 
 		<dependency>

@@ -17,9 +17,9 @@ public class UserSubscription {
     @Id
     private String id;
     private String userId;
-    private String planId; // ID del plan (Basic o Premium)
+    private String planId; 
     private String planName;
-    private String status; // "active", "cancelled", "expired"
+    private String status; 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private LocalDateTime renewalDate;

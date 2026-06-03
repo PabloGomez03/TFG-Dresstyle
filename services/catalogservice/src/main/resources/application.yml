@@ -5,7 +5,7 @@ spring:
     uri: ${SPRING_MONGODB_URI:mongodb://mongodb:27017/dresstyle_catalog}
 
   rabbitmq:
-    host: rabbitmq # Nombre del servicio definido en docker-compose
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
@@ -17,7 +17,14 @@ eureka:
       defaultZone: http://discovery-server:8761/eureka/
 
 server:
-  port: 8082 # Puerto específico para este servicio
+  port: 8082 
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
 
 jwt:
   secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}

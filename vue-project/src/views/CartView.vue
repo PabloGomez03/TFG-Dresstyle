@@ -72,7 +72,7 @@ const adjustedTotals = computed(() => {
       <div class="cart-section">
         <h1>Mi Carrito de Compras</h1>
 
-        <!-- Modal de Login -->
+        
         <div v-if="showLoginModal" class="modal-overlay">
           <div class="modal">
             <h2>Acceso Requerido</h2>
@@ -191,7 +191,7 @@ const adjustedTotals = computed(() => {
   flex-shrink: 0;
 }
 
-/* Modal Styles */
+
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;

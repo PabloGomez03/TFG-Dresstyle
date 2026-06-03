@@ -58,12 +58,12 @@ const openCatalog = () => {
 
 .home-view {
   display: flex;
-  flex-direction: column; /*Ocupa toda la altura de la ventana de home*/
+  flex-direction: column; 
   min-height: 100vh;
 }
 
 .main-footer {
-  /* Empuja el componente al final del contenedor */
+  
   margin-top: auto;
 }
 

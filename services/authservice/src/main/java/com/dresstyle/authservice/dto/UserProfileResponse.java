@@ -16,7 +16,7 @@ public class UserProfileResponse {
     private String lastName;
     private String email;
     private String phone;
-    // Campos de compatibilidad para frontends que aun consumen direccion simple.
+    
     private String address;
     private String city;
     private String zipCode;

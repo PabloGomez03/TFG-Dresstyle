@@ -146,7 +146,7 @@ function normalizeImageUrl(imageUrl) {
     return FALLBACK_IMAGE_URL;
   }
 
-  if (trimmed.startsWith('/') || /^https?:\/\//i.test(trimmed)) {
+  if (trimmed.startsWith('/') || /^https?:\/\//.test(trimmed)) {
     return trimmed;
   }
 
@@ -228,7 +228,7 @@ export const useCartStore = defineStore('cart', {
 
   actions: {
     async addItem(product, quantity = 1, size = null) {
-      // Buscar si el producto con la misma talla ya está en el carrito
+
       const existingItem = this.items.find(
         item => item.id === product.id && item.size === size
       );
@@ -300,7 +300,7 @@ export const useCartStore = defineStore('cart', {
           const remoteItems = await loadRemoteCart();
           let nextItems = guestItems.length ? mergeItems(remoteItems, guestItems) : remoteItems;
 
-          // Recupera respaldo por usuario si el backend devuelve vacío.
+
           if (!nextItems.length && userBackupItems.length) {
             nextItems = userBackupItems;
           }
@@ -320,7 +320,7 @@ export const useCartStore = defineStore('cart', {
         } catch (error) {
           console.error('Error cargando el carrito remoto:', error);
 
-          // Fallback si el backend falla: intentamos preservar lo local y el respaldo por usuario.
+
           if (guestItems.length) {
             this.items = guestItems.map(normalizeItem);
           } else {

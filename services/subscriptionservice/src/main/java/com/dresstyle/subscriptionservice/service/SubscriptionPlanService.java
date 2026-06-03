@@ -16,9 +16,7 @@ public class SubscriptionPlanService {
 
     private final SubscriptionPlanRepository planRepository;
 
-    /**
-     * Obtener todos los planes activos
-     */
+    
     public List<SubscriptionPlanResponse> getAllActivePlans() {
         return planRepository.findAll()
                 .stream()
@@ -27,35 +25,27 @@ public class SubscriptionPlanService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Obtener un plan por ID
-     */
+    
     public SubscriptionPlanResponse getPlanById(String planId) {
         return planRepository.findById(planId)
                 .map(this::mapToResponse)
                 .orElseThrow(() -> new RuntimeException("Plan no encontrado: " + planId));
     }
 
-    /**
-     * Obtener un plan por nombre
-     */
+    
     public SubscriptionPlanResponse getPlanByName(String name) {
         return planRepository.findByName(name)
                 .map(this::mapToResponse)
                 .orElseThrow(() -> new RuntimeException("Plan no encontrado: " + name));
     }
 
-    /**
-     * Obtener el modelo del plan (para uso interno)
-     */
+    
     public SubscriptionPlan getPlanModel(String planId) {
         return planRepository.findById(planId)
                 .orElseThrow(() -> new RuntimeException("Plan no encontrado: " + planId));
     }
 
-    /**
-     * Inicializar planes si no existen
-     */
+    
     public void initializePlans() {
         if (planRepository.count() == 0) {
             SubscriptionPlan basic = SubscriptionPlan.builder()

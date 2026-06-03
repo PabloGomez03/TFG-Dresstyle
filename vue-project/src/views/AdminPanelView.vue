@@ -195,7 +195,7 @@ async function uploadImageToCloudinary() {
         const errorPayload = await response.json()
         cloudinaryErrorMessage = errorPayload?.error?.message || errorPayload?.message || cloudinaryErrorMessage
       } catch {
-        // Si Cloudinary no devuelve JSON, mantenemos el mensaje por defecto.
+        
       }
 
       throw new Error(cloudinaryErrorMessage)
@@ -307,16 +307,16 @@ function cancelEdit() {
 function onSearchInput() {
   currentPage.value = 0
 
-  // Clear any existing debounce timer
+  
   if (searchDebounceTimer) {
     clearTimeout(searchDebounceTimer)
   }
 
-  // Set a new debounce timer to avoid too many requests while typing
+  
   searchDebounceTimer = setTimeout(() => {
     fetchProducts()
     searchDebounceTimer = null
-  }, 500) // Wait 500ms after user stops typing before searching
+  }, 500) 
 }
 
 
@@ -869,9 +869,9 @@ td:nth-child(7) {
   box-shadow: 0 24px 60px rgba(17, 24, 39, 0.24);
 }
 
-/* Force readable text colors inside the delete modal (overrides .content p white) */
+
 .delete-modal {
-  color: #111827; /* base text color */
+  color: #111827; 
 }
 
 .delete-modal p {

@@ -20,9 +20,7 @@ public class UserSubscriptionController {
 
     private final UserSubscriptionService subscriptionService;
 
-    /**
-     * Obtener la suscripción activa del usuario
-     */
+    
     @GetMapping("/my-subscription")
     public ResponseEntity<UserSubscriptionResponse> getMySubscription(Authentication authentication) {
         String userId = authentication.getName();
@@ -34,18 +32,14 @@ public class UserSubscriptionController {
         return ResponseEntity.ok(subscription);
     }
 
-    /**
-     * Obtener el historial de suscripciones del usuario
-     */
+    
     @GetMapping("/history")
     public ResponseEntity<List<UserSubscriptionResponse>> getSubscriptionHistory(Authentication authentication) {
         String userId = authentication.getName();
         return ResponseEntity.ok(subscriptionService.getSubscriptionHistory(userId));
     }
 
-    /**
-     * Suscribirse a un plan
-     */
+    
     @PostMapping("/subscribe")
     public ResponseEntity<UserSubscriptionResponse> subscribe(
             Authentication authentication,
@@ -55,9 +49,7 @@ public class UserSubscriptionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(subscription);
     }
 
-    /**
-     * Cancelar suscripción
-     */
+    
     @PostMapping("/cancel")
     public ResponseEntity<Map<String, String>> cancelSubscription(Authentication authentication) {
         String userId = authentication.getName();
@@ -65,9 +57,7 @@ public class UserSubscriptionController {
         return ResponseEntity.ok(Map.of("message", "Suscripción cancelada exitosamente"));
     }
 
-    /**
-     * Obtener beneficios del usuario (descuento, envío gratis)
-     */
+    
     @GetMapping("/benefits")
     public ResponseEntity<SubscriptionBenefitsResponse> getBenefits(Authentication authentication) {
         String userId = authentication.getName();

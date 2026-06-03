@@ -17,11 +17,11 @@ import java.util.Set;
 @Document(collection = "users")
 public class User {
     @Id
-    private String userId; // MongoDB generará el ID automáticamente
+    private String userId; 
 
     private String name;
 
-    @Indexed(unique = true) // Garantiza que no haya correos duplicados
+    @Indexed(unique = true) 
     private String email;
 
     private String passwordHash;
@@ -32,7 +32,7 @@ public class User {
 
     private List<Address> addresses;
 
-    // Campo para el servicio de fidelización
+    
     private boolean activeSubscription;
 
 }

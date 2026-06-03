@@ -62,6 +62,7 @@ public class SecurityConfig {
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(HttpMethod.OPTIONS).permitAll()
+                        .pathMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/api/catalog/products").permitAll()
                         .pathMatchers(HttpMethod.GET, "/api/catalog/**").permitAll()
                             .pathMatchers(HttpMethod.GET, "/api/subscription/plans").permitAll()
@@ -73,14 +74,14 @@ public class SecurityConfig {
     @Bean
     public ReactiveJwtDecoder jwtDecoder() {
         byte[] keyBytes = Base64.getDecoder().decode(jwtSecret);
-        SecretKey key = new SecretKeySpec(keyBytes, "HmacSHA256"); //La API se encarga de decodear el JWT y verificar la firma con esta clave
+        SecretKey key = new SecretKeySpec(keyBytes, "HmacSHA256"); 
         return NimbusReactiveJwtDecoder.withSecretKey(key).build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // IMPORTANTE: Permitimos el origen de Vite y el frontend en localhost sin puerto explícito
+        
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost",
                 "http://localhost:80",

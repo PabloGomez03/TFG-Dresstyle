@@ -12,7 +12,7 @@ public class SubscriptionserviceApplication {
 
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(SubscriptionserviceApplication.class, args);
-		// Inicializar los planes de suscripción
+		
 		SubscriptionPlanService planService = context.getBean(SubscriptionPlanService.class);
 		planService.initializePlans();
 	}

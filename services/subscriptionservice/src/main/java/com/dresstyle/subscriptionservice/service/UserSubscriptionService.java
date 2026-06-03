@@ -20,27 +20,21 @@ public class UserSubscriptionService {
     private final UserSubscriptionRepository subscriptionRepository;
     private final SubscriptionPlanService planService;
 
-    /**
-     * Obtener la suscripción activa del usuario
-     */
+    
     public UserSubscriptionResponse getActiveSubscription(String userId) {
         return subscriptionRepository.findByUserIdAndStatus(userId, "active")
                 .map(this::mapToResponse)
                 .orElse(null);
     }
 
-    /**
-     * Obtener cualquier suscripción del usuario
-     */
+    
     public UserSubscriptionResponse getUserSubscription(String userId) {
         return subscriptionRepository.findByUserId(userId)
                 .map(this::mapToResponse)
                 .orElse(null);
     }
 
-    /**
-     * Obtener el historial de suscripciones
-     */
+    
     public List<UserSubscriptionResponse> getSubscriptionHistory(String userId) {
         return subscriptionRepository.findAllByUserId(userId)
                 .stream()
@@ -48,14 +42,12 @@ public class UserSubscriptionService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Crear o actualizar suscripción del usuario
-     */
+    
     public UserSubscriptionResponse subscribe(String userId, SubscribeRequest request) {
-        // Obtener el plan
+        
         SubscriptionPlan plan = planService.getPlanModel(request.getPlanId());
 
-        // Si el usuario ya tiene una suscripción activa, cancelarla primero
+        
         subscriptionRepository.findByUserIdAndStatus(userId, "active")
                 .ifPresent(sub -> {
                     sub.setStatus("cancelled");
@@ -63,9 +55,9 @@ public class UserSubscriptionService {
                     subscriptionRepository.save(sub);
                 });
 
-        // Crear nueva suscripción
+        
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime endDate = now.plusMonths(1); // Suscripción de 1 mes
+        LocalDateTime endDate = now.plusMonths(1); 
 
         UserSubscription subscription = UserSubscription.builder()
                 .userId(userId)
@@ -84,9 +76,7 @@ public class UserSubscriptionService {
         return mapToResponse(saved);
     }
 
-    /**
-     * Cancelar suscripción
-     */
+    
     public void cancelSubscription(String userId) {
         subscriptionRepository.findByUserIdAndStatus(userId, "active")
                 .ifPresent(sub -> {
@@ -96,16 +86,12 @@ public class UserSubscriptionService {
                 });
     }
 
-    /**
-     * Verificar si el usuario tiene una suscripción activa
-     */
+    
     public boolean hasActiveSubscription(String userId) {
         return subscriptionRepository.findByUserIdAndStatus(userId, "active").isPresent();
     }
 
-    /**
-     * Obtener los beneficios del usuario (descuento, envío gratis, etc.)
-     */
+    
     public SubscriptionBenefitsResponse getUserBenefits(String userId) {
         return subscriptionRepository.findByUserIdAndStatus(userId, "active")
                 .map(sub -> {

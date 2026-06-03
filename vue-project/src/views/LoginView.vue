@@ -26,7 +26,7 @@ const handleLogin = async () => {
     const targetRouteName = result.isAdmin ? 'admin-panel' : 'home'
     await router.replace({ name: targetRouteName })
 
-    // Fallback de seguridad: si por alguna razón no cambia la ruta, forzamos navegación.
+    
     if (router.currentRoute.value.name === 'login') {
       const { href } = router.resolve({ name: targetRouteName })
       window.location.assign(href)
@@ -96,13 +96,13 @@ const handleLogin = async () => {
 <style scoped>
 .login-view {
   display: flex;
-  flex-direction: column; /*Ocupa toda la altura de la ventana de home*/
+  flex-direction: column; 
   min-height: 100vh;
 }
 
 
 .main-footer {
-  /* Empuja el componente al final del contenedor */
+  
   margin-top: auto;
 }
 

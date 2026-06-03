@@ -1,10 +1,10 @@
-// Switch to subscription database
+
 db = db.getSiblingDB('dresstyle_subscription');
 
-// Drop existing collection if needed
+
 db.subscriptionPlans.deleteMany({});
 
-// Insert subscription plans
+
 db.subscriptionPlans.insertMany([
   {
     name: "Basic",

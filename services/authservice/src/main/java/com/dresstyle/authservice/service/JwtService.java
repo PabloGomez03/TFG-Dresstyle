@@ -40,7 +40,7 @@ public class JwtService {
 
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes); //Este método es el que transforma tu secretKey
-                                             // en una clave criptográfica real.
+        return Keys.hmacShaKeyFor(keyBytes); 
+                                             
     }
 }

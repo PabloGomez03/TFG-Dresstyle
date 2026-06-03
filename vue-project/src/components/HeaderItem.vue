@@ -43,7 +43,7 @@ const handleSearch = () => {
 defineProps({
   logoHeight: {
     type: String,
-    default: '60px' //Propiedades para ajustar el tamaño en la imagen de manera flexible
+    default: '60px' 
   },
   cartHeight: {
     type: String,

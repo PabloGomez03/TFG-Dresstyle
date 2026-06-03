@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Setter
 @Getter
-public class Address { //Esta clase no tendra id propio en nuestra base de datos, ya que vivirá dentro de User
+public class Address { 
 
     private String street;
     private String city;

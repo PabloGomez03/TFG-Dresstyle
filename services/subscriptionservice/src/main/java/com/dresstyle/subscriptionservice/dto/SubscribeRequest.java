@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SubscribeRequest {
-    private String planId; // ID del plan (Basic o Premium)
+    private String planId; 
     private boolean autoRenew;
 }

@@ -34,10 +34,10 @@ public class SecurityConfig {
     public JwtDecoder jwtDecoder() {
         byte[] keyBytes;
         try {
-            // try to decode Base64 (common in env vars)
+            
             keyBytes = Base64.getDecoder().decode(jwtSecret);
         } catch (IllegalArgumentException ex) {
-            // not base64, fallback to UTF-8 bytes
+            
             keyBytes = jwtSecret.getBytes(StandardCharsets.UTF_8);
         }
 
@@ -51,6 +51,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/subscription/plans/**").permitAll()
                         .requestMatchers("/subscription/**").authenticated()
                         .anyRequest().authenticated())

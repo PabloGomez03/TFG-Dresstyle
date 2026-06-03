@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import http from '@/api/http'; // Importamos tu configuración de axios
+import http from '@/api/http'; 
 
 function normalizeRoles(roles) {
   const roleList = Array.isArray(roles) ? roles : roles ? [roles] : [];
@@ -60,18 +60,18 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(credentials) {
       try {
-        // Petición al endpoint que definimos en el AuthController del backend
+        
         const response = await http.post('/auth/login', credentials);
 
         const { token, userId, email, roles } = response.data;
         const normalizedRoles = normalizeRoles(roles);
 
-        // Guardar en el estado de Pinia
+        
         this.token = token;
         this.user = { userId, email, roles: normalizedRoles };
         this.isAuthenticated = true;
 
-        // Persistencia para que no se borre al recargar la página
+        
         localStorage.setItem('token', token);
 
         return {
