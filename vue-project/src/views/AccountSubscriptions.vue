@@ -7,8 +7,8 @@ import FooterItem from '@/components/FooterItem.vue'
 const subStore = useSubscriptionStore()
 
 onMounted(async () => {
-  if (!subStore.plans.length) await subStore.fetchPlans()
-  await subStore.fetchUserSubscription()
+  await subStore.fetchPlans()
+  await subStore.fetchUserSubscription({ force: true })
 })
 
 const currentPlan = computed(() => {

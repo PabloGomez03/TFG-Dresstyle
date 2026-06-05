@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
-import http from '@/api/http'; 
+import http from '@/api/http';
+import { useSubscriptionStore } from '@/stores/subscription'; 
 
 function normalizeRoles(roles) {
   const roleList = Array.isArray(roles) ? roles : roles ? [roles] : [];
@@ -70,8 +71,8 @@ export const useAuthStore = defineStore('auth', {
         this.token = token;
         this.user = { userId, email, roles: normalizedRoles };
         this.isAuthenticated = true;
+        useSubscriptionStore().reset();
 
-        
         localStorage.setItem('token', token);
 
         return {
@@ -112,6 +113,7 @@ export const useAuthStore = defineStore('auth', {
       this.user = null;
       this.isAuthenticated = false;
       localStorage.removeItem('token');
+      useSubscriptionStore().reset();
 
       if (clearGuestCart && typeof window !== 'undefined') {
         window.sessionStorage.removeItem('cart');

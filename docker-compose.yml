@@ -78,7 +78,7 @@ services:
     ports:
       - "8082:8082"
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/dresstyle_catalog
+      - MONGODB_URI=mongodb://mongodb:27017/dresstyle_catalog
       - SPRING_RABBITMQ_HOST=rabbitmq
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
       - JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970

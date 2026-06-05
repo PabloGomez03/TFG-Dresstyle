@@ -2,6 +2,7 @@ import axios from 'axios'
 
 const baseURL = "/api"
 const publicAuthPaths = ['/auth/login', '/auth/register']
+const publicApiPaths = ['/catalog/products', '/subscription/plans']
 
 const http = axios.create({
   baseURL: baseURL,
@@ -15,6 +16,7 @@ http.interceptors.request.use((config) => {
   const requestUrl = config.url || ''
   let token = localStorage.getItem('token')
   const isPublicAuthRequest = publicAuthPaths.some((path) => requestUrl.startsWith(path))
+  const isPublicApiRequest = publicApiPaths.some((path) => requestUrl.startsWith(path))
 
   
   if (token === 'undefined') {
@@ -22,7 +24,7 @@ http.interceptors.request.use((config) => {
     token = null
   }
 
-  if (!isPublicAuthRequest && token) {
+  if (!isPublicAuthRequest && !isPublicApiRequest && token) {
     config.headers.Authorization = `Bearer ${token}`
   }
 

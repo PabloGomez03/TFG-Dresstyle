@@ -27,7 +27,7 @@ public class UserSubscriptionController {
         UserSubscriptionResponse subscription = subscriptionService.getActiveSubscription(userId);
 
         if (subscription == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(subscription);
     }

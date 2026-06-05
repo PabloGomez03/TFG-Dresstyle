@@ -36,7 +36,6 @@ onMounted(async () => {
   }
 
   await subStore.fetchPlans()
-  await subStore.fetchUserSubscription()
 
   try {
     const res = await http.get('/auth/profile')

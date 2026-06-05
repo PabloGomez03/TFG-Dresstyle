@@ -11,6 +11,10 @@ public interface ProductRepository extends MongoRepository<Product, String> {
     boolean existsByNameIgnoreCase(String name);
     boolean existsByNameIgnoreCaseAndIdNot(String name, String id);
 
-    @Query("{ '$text': { '$search': ?0 } }")
+    @Query("{ '$or': [ " +
+           "{ 'name': { '$regex': ?0, '$options': 'i' } }, " +
+           "{ 'description': { '$regex': ?0, '$options': 'i' } }, " +
+           "{ 'category': { '$regex': ?0, '$options': 'i' } } " +
+           "] }")
     Page<Product> searchByTerm(String term, Pageable pageable);
 }

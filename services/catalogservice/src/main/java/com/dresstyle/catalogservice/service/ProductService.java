@@ -1,4 +1,4 @@
-package com.dresstyle.catalogservice.service;
+..package com.dresstyle.catalogservice.service;
 
 import com.dresstyle.catalogservice.dto.ProductRequest;
 import com.dresstyle.catalogservice.dto.ProductResponse;
@@ -41,7 +41,8 @@ public class ProductService {
         if (query == null || query.trim().isEmpty()) {
             productPage = productRepository.findAll(pageable);
         } else {
-            productPage = productRepository.searchByTerm(query.trim(), pageable);
+            String sanitized = query.trim().replaceAll("([\\\\.*+?^${}()|\\[\\]])", "\\\\$1");
+            productPage = productRepository.searchByTerm(sanitized, pageable);
         }
 
         List<ProductResponse> content = productPage.getContent()

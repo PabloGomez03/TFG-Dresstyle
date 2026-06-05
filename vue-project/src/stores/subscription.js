@@ -5,23 +5,48 @@ export const useSubscriptionStore = defineStore('subscription', {
   state: () => ({
     plans: [],
     userSubscription: null,
-    loading: false
+    loading: false,
+    userSubscriptionLoaded: false,
+    userSubscriptionLoading: false,
+    plansLoaded: false
   }),
   actions: {
-    async fetchPlans() {
+    reset() {
+      this.plans = []
+      this.userSubscription = null
+      this.loading = false
+      this.userSubscriptionLoaded = false
+      this.userSubscriptionLoading = false
+      this.plansLoaded = false
+    },
+    async fetchPlans({ force = false } = {}) {
+      if (this.plansLoaded && !force) return
+
       try {
         const res = await http.get('/subscription/plans')
         this.plans = Array.isArray(res.data) ? res.data : res.data?.content || []
-      } catch  {
+        this.plansLoaded = true
+      } catch {
         this.plans = []
       }
     },
-    async fetchUserSubscription() {
+    async fetchUserSubscription({ force = false } = {}) {
+      if (this.userSubscriptionLoading) return
+      if (this.userSubscriptionLoaded && !force) return
+
+      this.userSubscriptionLoading = true
+
       try {
         const res = await http.get('/subscription/my-subscription')
-        this.userSubscription = res.data
-      } catch {
-        this.userSubscription = null
+        this.userSubscription = res.status === 204 || !res.data ? null : res.data
+      } catch (error) {
+        const status = error?.response?.status
+        if (status === 404 || status === 204) {
+          this.userSubscription = null
+        }
+      } finally {
+        this.userSubscriptionLoaded = true
+        this.userSubscriptionLoading = false
       }
     },
     async subscribe(planId, autoRenew = true) {
@@ -29,6 +54,7 @@ export const useSubscriptionStore = defineStore('subscription', {
       try {
         const res = await http.post('/subscription/subscribe', { planId, autoRenew })
         this.userSubscription = res.data
+        this.userSubscriptionLoaded = true
         return res.data
       } finally {
         this.loading = false
@@ -39,6 +65,7 @@ export const useSubscriptionStore = defineStore('subscription', {
       try {
         await http.post('/subscription/cancel')
         this.userSubscription = null
+        this.userSubscriptionLoaded = true
       } finally {
         this.loading = false
       }

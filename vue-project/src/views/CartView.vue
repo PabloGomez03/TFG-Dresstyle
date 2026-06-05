@@ -42,7 +42,6 @@ onMounted(() => {
 onMounted(async () => {
   if (authStore.isAuthenticated) {
     await subStore.fetchPlans()
-    await subStore.fetchUserSubscription()
   }
 })
 
