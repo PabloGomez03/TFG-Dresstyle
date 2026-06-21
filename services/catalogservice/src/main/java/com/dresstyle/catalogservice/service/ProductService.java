@@ -1,4 +1,4 @@
-..package com.dresstyle.catalogservice.service;
+package com.dresstyle.catalogservice.service;
 
 import com.dresstyle.catalogservice.dto.ProductRequest;
 import com.dresstyle.catalogservice.dto.ProductResponse;
