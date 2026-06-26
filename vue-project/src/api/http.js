@@ -16,7 +16,7 @@ http.interceptors.request.use((config) => {
   const requestUrl = config.url || ''
   let token = localStorage.getItem('token')
   const isPublicAuthRequest = publicAuthPaths.some((path) => requestUrl.startsWith(path))
-  const isPublicApiRequest = publicApiPaths.some((path) => requestUrl.startsWith(path))
+  const isPublicApiRequest = publicApiPaths.some((path) => requestUrl.startsWith(path)) && (config.method || 'get').toLowerCase() === 'get'
 
   
   if (token === 'undefined') {
